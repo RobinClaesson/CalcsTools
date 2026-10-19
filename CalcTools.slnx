@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="CalcTools.Core\CalcTools.Core.csproj" />
+  <Project Path="CalcTools.Tests\CalcTools.Tests.csproj" />
 </Solution>
