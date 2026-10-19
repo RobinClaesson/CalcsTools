@@ -1,0 +1,16 @@
+namespace CalcTools.Core.UprFvx;
+
+public record RandomizerLog
+{
+    public required string BaseGame { get; init; }
+    public required string RandomizerVersion { get; init; }
+    public required ulong RandomSeed { get; init; }
+    public required string SettingsString { get; init; }
+    public required RandomizationOverview RandomizationOverview { get; init; }
+    public List<LogPokemon> PokemonStatistics { get; init; } = [];
+    public List<LogMove> MoveData { get; init; } = [];
+    public List<LogMoveset> PokemonMovesets { get; init; } = [];
+
+    //TODO: Replace with nullable properties with models for each possible section
+    public Dictionary<string, LogSection> Sections { get; init; } = [];
+}
