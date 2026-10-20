@@ -12,4 +12,5 @@ public static class LogSectionIdentifiers
     public const string TrainerPokemon = "TRPK";
     public const string MoveData = "MVDT";
     public const string PokemonMoveSets = "PKMV";
+    public const string TmMoves = "TMMV";
 }

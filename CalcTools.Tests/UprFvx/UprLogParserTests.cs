@@ -41,7 +41,8 @@ public class UprLogParserTests
         (
             LogTestData.LogPokemonStatisticsSection,
             LogTestData.LogMoveDataWithOldName,
-            LogTestData.LogPokemonMovesets
+            LogTestData.LogPokemonMovesets,
+            LogTestData.LogTmMoves
         );
 
         // Act
@@ -53,6 +54,7 @@ public class UprLogParserTests
         Assert.Contains(LogSectionIdentifiers.PokemonBaseStatistics, result.Keys);
         Assert.Contains(LogSectionIdentifiers.MoveData, result.Keys);
         Assert.Contains(LogSectionIdentifiers.PokemonMoveSets, result.Keys);
+        Assert.Contains(LogSectionIdentifiers.TmMoves, result.Keys);
     }
     
     [Fact]
@@ -263,5 +265,26 @@ public class UprLogParserTests
 
         // Assert
         Assert.Equivalent(expectedMovesets, result);
+    }
+
+    [Fact]
+    public void ParseLog_ParsesTmMoves()
+    {
+        // Arrange
+        var log = LogTestData.BuildTestLog(LogTestData.LogTmMoves);
+
+        var expectedTms = new List<LogTmMove>
+        {
+            new(){ TmNumber = 1, Move = "HYPER BEAM"},
+            new(){ TmNumber = 2, Move = "BIDE"},
+            new(){ TmNumber = 3, Move = "THUNDER WAVE"},
+            new(){ TmNumber = 4, Move = "LICK"},
+        };
+        
+        // Act
+        var result = UprLogParser.ParseLog(log).TmMoves;
+        
+        // Assert 
+        Assert.Equivalent(expectedTms, result);
     }
 }

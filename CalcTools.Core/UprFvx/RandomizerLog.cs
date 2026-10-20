@@ -10,7 +10,6 @@ public record RandomizerLog
     public List<LogPokemon> PokemonStatistics { get; init; } = [];
     public List<LogMove> MoveData { get; init; } = [];
     public List<LogMoveset> PokemonMovesets { get; init; } = [];
-
-    //TODO: Replace with nullable properties with models for each possible section
+    public List<LogTmMove> TmMoves { get; init; } = [];
     public Dictionary<string, LogSection> Sections { get; init; } = [];
 }

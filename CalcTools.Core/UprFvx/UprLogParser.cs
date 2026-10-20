@@ -40,6 +40,7 @@ public static partial class UprLogParser
             PokemonStatistics = ParseLogPokemon(categorizedSections),
             MoveData = ParseMoveData(categorizedSections),
             PokemonMovesets = ParseMovesets(categorizedSections),
+            TmMoves = ParseTmMoves(categorizedSections),
             Sections = categorizedSections,
         };
     }
@@ -154,6 +155,11 @@ public static partial class UprLogParser
         };
     }
 
+    private static List<LogTmMove> ParseTmMoves(Dictionary<string, LogSection> sections) =>
+        sections.TryGetValue(LogSectionIdentifiers.TmMoves, out var section)
+            ? [.. TmMoveRegex().Matches(section.Content).Select(BuildLogTmMove)]
+            : [];
+
     private static LogSection? CategorizeSection(string section)
     {
         var sectionTitleMatch = SectionTitleRegex().Match(section);
@@ -229,6 +235,12 @@ public static partial class UprLogParser
         Pp = int.Parse(match.Groups["pp"].Value),
     };
 
+    private static LogTmMove BuildLogTmMove(Match match) => new()
+    {
+        TmNumber = int.Parse(match.Groups["number"].Value),
+        Move = match.Groups["move"].Value,
+    };
+
     [GeneratedRegex("^=+$", RegexOptions.Multiline)]
     private static partial Regex DividerRegex();
 
@@ -261,4 +273,7 @@ public static partial class UprLogParser
         @"^(?<number>\d+)\s*\|(?:(?<old_name>\w[\w\s-]+\w)\s*\|)?(?<name>\w[\w\s-]+\w)\s*\|(?<type>[\w?]+)\s*\|(?<power>\d+)\s*\|(?<accuracy>\d+)%\s*\|(?<pp>\d+)\s*$",
         RegexOptions.Multiline)]
     private static partial Regex MoveDataRegex();
+
+    [GeneratedRegex(@"^TM(?<number>\d+)\s*(?<move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
+    private static partial Regex TmMoveRegex();
 }

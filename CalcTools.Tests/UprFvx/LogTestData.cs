@@ -179,4 +179,14 @@ public static class LogTestData
           60|  81|  97|  55|  70|  50 
         Level 48: CURSE       | null     | STATUS   | POW= -- | PP=10 | ACC=  0%
         """;
+
+    public const string LogTmMoves =
+        """
+        ( TM Moves {TMMV} )
+        
+        TM01 HYPER BEAM
+        TM02 BIDE
+        TM03 THUNDER WAVE
+        TM04 LICK
+        """;
 }
