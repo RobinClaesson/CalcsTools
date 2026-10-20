@@ -159,7 +159,7 @@ public static partial class UprLogParser
 
         return new LogMoveset
         {
-            Num = int.Parse(info.Groups["number"].Value),
+            Number = int.Parse(info.Groups["number"].Value),
             Name = info.Groups["name"].Value,
             Evolution = info.Groups["evolution"].Value,
             Hp = int.Parse(stats.Groups["stat"].Captures[0].Value),
@@ -193,7 +193,7 @@ public static partial class UprLogParser
 
     private static LogPokemon BuildLogPokemon(Match match) => new()
     {
-        Num = int.Parse(match.Groups["number"].Value),
+        Number = int.Parse(match.Groups["number"].Value),
         Name = match.Groups["name"].Value,
         Types = [.. match.Groups["type"].Captures.Select(c => c.Value)],
         BaseStatTotal = int.Parse(match.Groups["stat"].Captures[0].Value),
@@ -232,7 +232,7 @@ public static partial class UprLogParser
 
     private static LogMove BuildLogMove(Match match) => new()
     {
-        Num = int.Parse(match.Groups["number"].Value),
+        Number = int.Parse(match.Groups["number"].Value),
         OldName = match.Groups["old_name"].Success ? match.Groups["old_name"].Value : null,
         Name = match.Groups["name"].Value,
         Type = match.Groups["type"].Value,

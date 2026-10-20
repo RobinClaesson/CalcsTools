@@ -2,7 +2,7 @@ namespace CalcTools.Core.UprFvx;
 
 public record LogPokemon()
 {
-    public int Num { get; init; }
+    public int Number { get; init; }
     public string Name { get; init; } = string.Empty;
     public string[] Types { get; init; } = [];
     public int BaseStatTotal { get; init; }

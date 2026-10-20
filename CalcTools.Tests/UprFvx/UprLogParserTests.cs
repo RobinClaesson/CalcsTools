@@ -118,19 +118,19 @@ public class UprLogParserTests
         {
             new()
             {
-                Num = 1, Name = "BULBASAUR", Types = ["ELECTRIC", "FIRE"], BaseStatTotal = 318,
+                Number = 1, Name = "BULBASAUR", Types = ["ELECTRIC", "FIRE"], BaseStatTotal = 318,
                 Hp = 65, Attack = 45, Defence = 65, SpecialAttack = 45, SpecialDefence = 49, Speed = 49,
                 Abilities = ["OVERGROW"], HeldItems = []
             },
             new()
             {
-                Num = 2, Name = "IVYSAUR", Types = ["FLYING"], BaseStatTotal = 405,
+                Number = 2, Name = "IVYSAUR", Types = ["FLYING"], BaseStatTotal = 405,
                 Hp = 80, Attack = 62, Defence = 80, SpecialAttack = 60, SpecialDefence = 63, Speed = 60,
                 Abilities = ["EFFECT SPORE", "SYNCHRONIZE"], HeldItems = ["LEPPA BERRY(common)"]
             },
             new()
             {
-                Num = 3, Name = "VENUSAUR", Types = ["BUG", "WATER"], BaseStatTotal = 525,
+                Number = 3, Name = "VENUSAUR", Types = ["BUG", "WATER"], BaseStatTotal = 525,
                 Hp = 80, Attack = 82, Defence = 100, SpecialAttack = 83, SpecialDefence = 100, Speed = 80,
                 Abilities = ["ARENA TRAP", "STICKY HOLD"], HeldItems = ["ORAN BERRY(100%)", "LIGHT BALL(rare)"]
             }
@@ -153,17 +153,17 @@ public class UprLogParserTests
         {
             new()
             {
-                Num = 1, OldName = null, Name = "POUND", Type = "GHOST",
+                Number = 1, OldName = null, Name = "POUND", Type = "GHOST",
                 Power = 50, Accuracy = 95, Pp = 15
             },
             new()
             {
-                Num = 2, OldName = null, Name = "KARATE CHOP", Type = "WATER",
+                Number = 2, OldName = null, Name = "KARATE CHOP", Type = "WATER",
                 Power = 85, Accuracy = 100, Pp = 25
             },
             new()
             {
-                Num = 3, OldName = null, Name = "CURSE", Type = "???",
+                Number = 3, OldName = null, Name = "CURSE", Type = "???",
                 Power = 0, Accuracy = 0, Pp = 15
             }
         };
@@ -185,17 +185,17 @@ public class UprLogParserTests
         {
             new()
             {
-                Num = 1, OldName = "POUND", Name = "CORE ASSAULT", Type = "NORMAL",
+                Number = 1, OldName = "POUND", Name = "CORE ASSAULT", Type = "NORMAL",
                 Power = 40, Accuracy = 100, Pp = 35
             },
             new()
             {
-                Num = 2, OldName = "KARATE CHOP", Name = "ARMBAR RUSH", Type = "FIGHTING",
+                Number = 2, OldName = "KARATE CHOP", Name = "ARMBAR RUSH", Type = "FIGHTING",
                 Power = 50, Accuracy = 100, Pp = 25
             },
             new()
             {
-                Num = 3, OldName = "CURSE", Name = "ATTACK AURA", Type = "???",
+                Number = 3, OldName = "CURSE", Name = "ATTACK AURA", Type = "???",
                 Power = 0, Accuracy = 0, Pp = 10
             }
         };
@@ -217,7 +217,7 @@ public class UprLogParserTests
         {
             new()
             {
-                Num = 019, Name = "RATTATA", Evolution = "RATICATE",
+                Number = 019, Name = "RATTATA", Evolution = "RATICATE",
                 Hp = 72, Attack = 35, Defence = 30, SpecialAttack = 35, SpecialDefence = 25, Speed = 56,
                 LevelUpMoves =
                 [
@@ -248,7 +248,7 @@ public class UprLogParserTests
             },
             new()
             {
-                Num = 020, Name = "RATICATE", Evolution = "(no evolution)",
+                Number = 020, Name = "RATICATE", Evolution = "(no evolution)",
                 Hp = 60, Attack = 81, Defence = 97, SpecialAttack = 55, SpecialDefence = 70, Speed = 50,
                 LevelUpMoves =
                 [
