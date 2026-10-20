@@ -240,4 +240,16 @@ public static class LogTestData
             #007 SQUIRTLE, #008 WARTORTLE,
             #020 RATICATE 
         """;
+
+    public const string LogTrainerPokemonSection =
+        """
+        ( Trainer Pokemon {TRPK} )
+
+        #1 (HIKER SAWYER)@310058 - HARIYAMA Lv21
+        #9 ([PK][MN] BREEDER GABRIELLE)@310198 - LEDIAN Lv46, NIDORAN♀ Lv48, POLIWAG Lv46, LATIOS Lv48, UMBREON@SITRUS BERRY Lv49
+
+        #34 (AQUA LEADER ARCHIE)@310580
+        MIGHTYENA Lv41, Ability: INTIMIDATE - HYPER BEAM, MUD-SLAP, TORMENT, DOUBLE TEAM
+        KINGDRA@CHESTO BERRY Lv46, Ability: SWIFT SWIM - HYDRO PUMP, FRUSTRATION, SLEEP TALK, ENDURE
+        """;
 }

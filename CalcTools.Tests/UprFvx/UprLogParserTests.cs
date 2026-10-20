@@ -59,6 +59,7 @@ public class UprLogParserTests
         Assert.Contains(LogSectionIdentifiers.MoveTutorMoves, result.Keys);
         Assert.DoesNotContain(LogSectionIdentifiers.TmHmCompatability, result.Keys);
         Assert.DoesNotContain(LogSectionIdentifiers.MoveTutorCompatability, result.Keys);
+        Assert.DoesNotContain(LogSectionIdentifiers.TrainerPokemon, result.Keys);
     }
 
     [Fact]
@@ -426,5 +427,59 @@ public class UprLogParserTests
         // Assert
         Assert.Equivalent(expectedSpecies, result.BySpecies);
         Assert.Equivalent(expectedTutorMoves, result.ByTutorMove);
+    }
+
+    [Fact]
+    public void ParseLog_ParsesTrainerPokemon()
+    {
+        // Arrange
+        var log = LogTestData.BuildTestLog(LogTestData.LogTrainerPokemonSection);
+
+        var expectedTrainers = new List<LogTrainer>
+        {
+            new()
+            {
+                Number = 1, Name = "HIKER SAWYER", Id = "310058",
+                Pokemon =
+                [
+                    new LogTrainerPokemon { Pokemon = "HARIYAMA", Level = 21, Item = null }
+                ]
+            },
+            new()
+            {
+                Number = 9, Name = "[PK][MN] BREEDER GABRIELLE", Id = "310198",
+                Pokemon =
+                [
+                    new LogTrainerPokemon { Pokemon = "LEDIAN", Level = 46, Item = null },
+                    new LogTrainerPokemon { Pokemon = "NIDORAN♀", Level = 48, Item = null },
+                    new LogTrainerPokemon { Pokemon = "POLIWAG", Level = 46, Item = null },
+                    new LogTrainerPokemon { Pokemon = "LATIOS", Level = 48, Item = null },
+                    new LogTrainerPokemon { Pokemon = "UMBREON", Level = 49, Item = "SITRUS BERRY" }
+                ]
+            },
+            new()
+            {
+                Number = 34, Name = "AQUA LEADER ARCHIE", Id = "310580",
+                Pokemon =
+                [
+                    new LogTrainerPokemon
+                    {
+                        Pokemon = "MIGHTYENA", Level = 41, Item = null, Ability = "INTIMIDATE",
+                        Moves = ["HYPER BEAM", "MUD-SLAP", "TORMENT", "DOUBLE TEAM"]
+                    },
+                    new LogTrainerPokemon
+                    {
+                        Pokemon = "KINGDRA", Level = 46, Item = "CHESTO BERRY", Ability = "SWIFT SWIM",
+                        Moves = ["HYDRO PUMP", "FRUSTRATION", "SLEEP TALK", "ENDURE"]
+                    }
+                ]
+            }
+        };
+
+        // Act
+        var result = UprLogParser.ParseLog(log).TrainerPokemon;
+
+        // Assert
+        Assert.Equivalent(expectedTrainers, result);
     }
 }

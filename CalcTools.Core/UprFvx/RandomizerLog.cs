@@ -12,6 +12,7 @@ public record RandomizerLog
     public List<LogPokemon> PokemonStatistics { get; init; } = [];
     public List<LogMove> MoveData { get; init; } = [];
     public List<LogMoveset> PokemonMovesets { get; init; } = [];
+    public List<LogTrainer> TrainerPokemon { get; init; } = [];
     public List<LogTmHmMove> TmMoves { get; init; } = [];
     public List<LogTutorMove> TutorMoves { get; init; } = [];
     public LogTmHmCompatibility TmHmCompatibility { get; init; } = new();
