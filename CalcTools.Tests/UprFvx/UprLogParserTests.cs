@@ -40,10 +40,10 @@ public class UprLogParserTests
         var log = LogTestData.BuildTestLog
         (
             LogTestData.LogPokemonStatisticsSection,
-            LogTestData.LogMoveDataWithOldName,
-            LogTestData.LogPokemonMovesets,
-            LogTestData.LogTmMoves,
-            LogTestData.LogTutorMoves
+            LogTestData.LogMoveDataSectionWithOldName,
+            LogTestData.LogPokemonMovesetsSection,
+            LogTestData.LogTmMovesSection,
+            LogTestData.LogTutorMovesSection
         );
 
         // Act
@@ -147,7 +147,7 @@ public class UprLogParserTests
     public void ParseLog_WhenMovesNamesAreNotRandomized_ParsesMoveData()
     {
         // Arrange
-        var log = LogTestData.BuildTestLog(LogTestData.LogMoveDataWithoutOldName);
+        var log = LogTestData.BuildTestLog(LogTestData.LogMoveDataSectionWithoutOldName);
 
         var expectedMoves = new List<LogMove>
         {
@@ -179,7 +179,7 @@ public class UprLogParserTests
     public void ParseLog_WhenMovesNamesAreRandomized_ParsesMoveData()
     {
         // Arrange
-        var log = LogTestData.BuildTestLog(LogTestData.LogMoveDataWithOldName);
+        var log = LogTestData.BuildTestLog(LogTestData.LogMoveDataSectionWithOldName);
 
         var expectedMoves = new List<LogMove>
         {
@@ -211,7 +211,7 @@ public class UprLogParserTests
     public void ParseLog_ParsesPokemonMovesets()
     {
         // Arrange
-        var log = LogTestData.BuildTestLog(LogTestData.LogPokemonMovesets);
+        var log = LogTestData.BuildTestLog(LogTestData.LogPokemonMovesetsSection);
 
         var expectedMovesets = new List<LogMoveset>
         {
@@ -273,14 +273,14 @@ public class UprLogParserTests
     public void ParseLog_ParsesTmMoves()
     {
         // Arrange
-        var log = LogTestData.BuildTestLog(LogTestData.LogTmMoves);
+        var log = LogTestData.BuildTestLog(LogTestData.LogTmMovesSection);
 
-        var expectedTms = new List<LogTmMove>
+        var expectedTms = new List<LogTmHmMove>
         {
-            new() { TmNumber = 1, Move = "HYPER BEAM" },
-            new() { TmNumber = 2, Move = "BIDE" },
-            new() { TmNumber = 3, Move = "THUNDER WAVE" },
-            new() { TmNumber = 4, Move = "MUD-SLAP" },
+            new() { Number = "TM01", Move = "HYPER BEAM" },
+            new() { Number = "TM02", Move = "BIDE" },
+            new() { Number = "TM03", Move = "THUNDER WAVE" },
+            new() { Number = "TM04", Move = "MUD-SLAP" },
         };
 
         // Act
@@ -294,7 +294,7 @@ public class UprLogParserTests
     public void ParseLog_ParsesTutorMoves()
     {
         // Arrange
-        var log = LogTestData.BuildTestLog(LogTestData.LogTutorMoves);
+        var log = LogTestData.BuildTestLog(LogTestData.LogTutorMovesSection);
 
         var expectedTutorMoves = new List<LogTutorMove>
         {
@@ -303,10 +303,10 @@ public class UprLogParserTests
             new() { OldMove = "MUD-SLAP", NewMove = "ENDURE" },
             new() { OldMove = "BODY SLAM", NewMove = "MUD-SLAP" },
         };
-        
+
         // Act
         var result = UprLogParser.ParseLog(log).TutorMoves;
-        
+
         // Assert
         Assert.Equivalent(expectedTutorMoves, result);
     }

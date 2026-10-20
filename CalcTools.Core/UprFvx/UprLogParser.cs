@@ -173,7 +173,7 @@ public static partial class UprLogParser
         };
     }
 
-    private static List<LogTmMove> ParseTmMoves(Dictionary<string, LogSection> sections) =>
+    private static List<LogTmHmMove> ParseTmMoves(Dictionary<string, LogSection> sections) =>
         sections.TryGetValue(LogSectionIdentifiers.TmMoves, out var section)
             ? [.. TmMoveRegex().Matches(section.Content).Select(BuildLogTmMove)]
             : [];
@@ -286,7 +286,7 @@ public static partial class UprLogParser
         RegexOptions.Multiline)]
     private static partial Regex MoveDataRegex();
 
-    [GeneratedRegex(@"^TM(?<number>\d+)\s*(?<move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
+    [GeneratedRegex(@"^(?<number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
     private static partial Regex TmMoveRegex();
 
     [GeneratedRegex(@"^(?<old_move>\w[\w -]+\w)\s*->\s*(?<new_move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]

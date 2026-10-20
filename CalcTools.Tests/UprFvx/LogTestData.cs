@@ -141,7 +141,7 @@ public static class LogTestData
           3|VENUSAUR  |BUG/WATER    | 525|  80|  82| 100|  83| 100|  80|ARENA TRAP  |STICKY HOLD |ORAN BERRY(100%), LIGHT BALL(rare)
         """;
 
-    public const string LogMoveDataWithoutOldName =
+    public const string LogMoveDataSectionWithoutOldName =
         """
         ( Move Data {MVDT} )
 
@@ -151,7 +151,7 @@ public static class LogTestData
         3  |CURSE       |???     |0    |0%  |15
         """;
 
-    public const string LogMoveDataWithOldName =
+    public const string LogMoveDataSectionWithOldName =
         """
         ( Move Data {MVDT} )
 
@@ -161,7 +161,7 @@ public static class LogTestData
         3  |CURSE       |ATTACK AURA |???     |0    |0%  |10
         """;
 
-    public const string LogPokemonMovesets =
+    public const string LogPokemonMovesetsSection =
         """
         ( Pokemon Movesets {PKMV} )
 
@@ -180,7 +180,7 @@ public static class LogTestData
         Level 48: CURSE       | null     | STATUS   | POW= -- | PP=10 | ACC=  0%
         """;
 
-    public const string LogTmMoves =
+    public const string LogTmMovesSection =
         """
         ( TM Moves {TMMV} )
         

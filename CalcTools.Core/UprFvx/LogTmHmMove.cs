@@ -1,7 +1,7 @@
 namespace CalcTools.Core.UprFvx;
 
-public record LogTmMove
+public record LogTmHmMove
 {
-    public required int TmNumber { get; init; }
+    public required string Number { get; init; }
     public required string Move {get; init; }
 }
