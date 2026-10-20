@@ -187,6 +187,16 @@ public static class LogTestData
         TM01 HYPER BEAM
         TM02 BIDE
         TM03 THUNDER WAVE
-        TM04 LICK
+        TM04 MUD-SLAP
+        """;
+
+    public const string LogTutorMoves =
+        """
+        ( Move Tutor Moves {MTMV} )
+        
+        MEGA PUNCH -> DESTINY BOND
+        SWORDS DANCE -> SLUDGE    
+        MUD-SLAP  -> ENDURE    
+        BODY SLAM  -> MUD-SLAP   
         """;
 }

@@ -41,6 +41,7 @@ public static partial class UprLogParser
             MoveData = ParseMoveData(categorizedSections),
             PokemonMovesets = ParseMovesets(categorizedSections),
             TmMoves = ParseTmMoves(categorizedSections),
+            TutorMoves = ParseTutorMoves(categorizedSections),
             Sections = categorizedSections,
         };
     }
@@ -50,6 +51,23 @@ public static partial class UprLogParser
         "???" or "null" => PokemonType.Unkown,
         _ => Enum.Parse<PokemonType>(logType, ignoreCase: true)
     };
+
+    private static LogSection? CategorizeSection(string section)
+    {
+        var sectionTitleMatch = SectionTitleRegex().Match(section);
+
+        if (!sectionTitleMatch.Success)
+            return null;
+
+        var titleEndIndex = sectionTitleMatch.Index + sectionTitleMatch.Length;
+
+        return new LogSection
+        {
+            Title = sectionTitleMatch.Groups["title"].Value,
+            Identifier = sectionTitleMatch.Groups["identifier"].Value,
+            Content = section[titleEndIndex..]
+        };
+    }
 
     private static RandomizationOverview ParseOverview(Dictionary<string, LogSection> sections)
     {
@@ -160,22 +178,10 @@ public static partial class UprLogParser
             ? [.. TmMoveRegex().Matches(section.Content).Select(BuildLogTmMove)]
             : [];
 
-    private static LogSection? CategorizeSection(string section)
-    {
-        var sectionTitleMatch = SectionTitleRegex().Match(section);
-
-        if (!sectionTitleMatch.Success)
-            return null;
-
-        var titleEndIndex = sectionTitleMatch.Index + sectionTitleMatch.Length;
-
-        return new LogSection
-        {
-            Title = sectionTitleMatch.Groups["title"].Value,
-            Identifier = sectionTitleMatch.Groups["identifier"].Value,
-            Content = section[titleEndIndex..]
-        };
-    }
+    private static List<LogTutorMove> ParseTutorMoves(Dictionary<string, LogSection> sections) =>
+        sections.TryGetValue(LogSectionIdentifiers.MoveTutorMoves, out var section)
+            ? [.. TutorMoveRegex().Matches(section.Content).Select(BuildLogTutorMove)]
+            : [];
 
     private static Dictionary<string, string> ParseKeyValuePairs(string section) => KeyValuePairRegex()
         .Matches(section)
@@ -241,6 +247,12 @@ public static partial class UprLogParser
         Move = match.Groups["move"].Value,
     };
 
+    private static LogTutorMove BuildLogTutorMove(Match match) => new()
+    {
+        OldMove = match.Groups["old_move"].Value,
+        NewMove = match.Groups["new_move"].Value,
+    };
+
     [GeneratedRegex("^=+$", RegexOptions.Multiline)]
     private static partial Regex DividerRegex();
 
@@ -276,4 +288,7 @@ public static partial class UprLogParser
 
     [GeneratedRegex(@"^TM(?<number>\d+)\s*(?<move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
     private static partial Regex TmMoveRegex();
+
+    [GeneratedRegex(@"^(?<old_move>\w[\w -]+\w)\s*->\s*(?<new_move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
+    private static partial Regex TutorMoveRegex();
 }

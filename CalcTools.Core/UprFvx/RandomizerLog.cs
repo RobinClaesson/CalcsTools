@@ -1,3 +1,5 @@
+using CalcTools.Core.UprFvx.Constants;
+
 namespace CalcTools.Core.UprFvx;
 
 public record RandomizerLog
@@ -11,5 +13,6 @@ public record RandomizerLog
     public List<LogMove> MoveData { get; init; } = [];
     public List<LogMoveset> PokemonMovesets { get; init; } = [];
     public List<LogTmMove> TmMoves { get; init; } = [];
+    public List<LogTutorMove> TutorMoves { get; init; } = [];
     public Dictionary<string, LogSection> Sections { get; init; } = [];
 }

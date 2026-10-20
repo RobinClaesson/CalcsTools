@@ -42,7 +42,8 @@ public class UprLogParserTests
             LogTestData.LogPokemonStatisticsSection,
             LogTestData.LogMoveDataWithOldName,
             LogTestData.LogPokemonMovesets,
-            LogTestData.LogTmMoves
+            LogTestData.LogTmMoves,
+            LogTestData.LogTutorMoves
         );
 
         // Act
@@ -55,8 +56,9 @@ public class UprLogParserTests
         Assert.Contains(LogSectionIdentifiers.MoveData, result.Keys);
         Assert.Contains(LogSectionIdentifiers.PokemonMoveSets, result.Keys);
         Assert.Contains(LogSectionIdentifiers.TmMoves, result.Keys);
+        Assert.Contains(LogSectionIdentifiers.MoveTutorMoves, result.Keys);
     }
-    
+
     [Fact]
     public void ParseLog_ParsesOverviewOfRandomization()
     {
@@ -275,16 +277,37 @@ public class UprLogParserTests
 
         var expectedTms = new List<LogTmMove>
         {
-            new(){ TmNumber = 1, Move = "HYPER BEAM"},
-            new(){ TmNumber = 2, Move = "BIDE"},
-            new(){ TmNumber = 3, Move = "THUNDER WAVE"},
-            new(){ TmNumber = 4, Move = "LICK"},
+            new() { TmNumber = 1, Move = "HYPER BEAM" },
+            new() { TmNumber = 2, Move = "BIDE" },
+            new() { TmNumber = 3, Move = "THUNDER WAVE" },
+            new() { TmNumber = 4, Move = "MUD-SLAP" },
+        };
+
+        // Act
+        var result = UprLogParser.ParseLog(log).TmMoves;
+
+        // Assert 
+        Assert.Equivalent(expectedTms, result);
+    }
+
+    [Fact]
+    public void ParseLog_ParsesTutorMoves()
+    {
+        // Arrange
+        var log = LogTestData.BuildTestLog(LogTestData.LogTutorMoves);
+
+        var expectedTutorMoves = new List<LogTutorMove>
+        {
+            new() { OldMove = "MEGA PUNCH", NewMove = "DESTINY BOND" },
+            new() { OldMove = "SWORDS DANCE", NewMove = "SLUDGE" },
+            new() { OldMove = "MUD-SLAP", NewMove = "ENDURE" },
+            new() { OldMove = "BODY SLAM", NewMove = "MUD-SLAP" },
         };
         
         // Act
-        var result = UprLogParser.ParseLog(log).TmMoves;
+        var result = UprLogParser.ParseLog(log).TutorMoves;
         
-        // Assert 
-        Assert.Equivalent(expectedTms, result);
+        // Assert
+        Assert.Equivalent(expectedTutorMoves, result);
     }
 }
