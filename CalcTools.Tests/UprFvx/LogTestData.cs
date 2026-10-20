@@ -190,7 +190,7 @@ public static class LogTestData
         TM04 MUD-SLAP
         """;
 
-    public const string LogTutorMoves =
+    public const string LogTutorMovesSection =
         """
         ( Move Tutor Moves {MTMV} )
         
@@ -198,5 +198,26 @@ public static class LogTestData
         SWORDS DANCE -> SLUDGE    
         MUD-SLAP  -> ENDURE    
         BODY SLAM  -> MUD-SLAP   
+        """;
+
+    public const string LogTmHmCompatibilitySection =
+        """
+        ( TM/HM Compatibility {TMCB} )
+        
+        --By Species:--
+        #029 NIDORAN♀
+        	TM45 HAIL, TM48 HYPNOSIS, HM02 FLY,
+        	HM07 WATERFALL
+        #250 HO-OH
+            TM45 HAIL, TM50 MUD-SLAP, 
+        	HM01 CUT
+        
+        --By TM/HM:--
+        TM01 HYPER BEAM
+        #003 VENUSAUR, #004 CHARMANDER,
+        #029 NIDORAN♂
+        HM08 DIVE
+        #007 SQUIRTLE, #008 WARTORTLE,
+        #020 RATICATE 
         """;
 }

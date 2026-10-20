@@ -57,6 +57,7 @@ public class UprLogParserTests
         Assert.Contains(LogSectionIdentifiers.PokemonMoveSets, result.Keys);
         Assert.Contains(LogSectionIdentifiers.TmMoves, result.Keys);
         Assert.Contains(LogSectionIdentifiers.MoveTutorMoves, result.Keys);
+        Assert.DoesNotContain(LogSectionIdentifiers.TmHmCompatability, result.Keys);
     }
 
     [Fact]
@@ -309,5 +310,68 @@ public class UprLogParserTests
 
         // Assert
         Assert.Equivalent(expectedTutorMoves, result);
+    }
+
+    [Fact]
+    public void ParseLog_ParsesTmHmCompatibility()
+    {
+        // Arrange
+        var log = LogTestData.BuildTestLog(LogTestData.LogTmHmCompatibilitySection);
+
+        var expectedSpecies = new List<LogTmHmCompatabilityBySpecies>
+        {
+            new()
+            {
+                Number = 029, Pokemon = "NIDORAN♀",
+                Moves =
+                [
+                    new LogTmHmMove { Number = "TM45", Move = "HAIL" },
+                    new LogTmHmMove { Number = "TM48", Move = "HYPNOSIS" },
+                    new LogTmHmMove { Number = "HM02", Move = "FLY" },
+                    new LogTmHmMove { Number = "HM07", Move = "WATERFALL" }
+                ]
+            },
+            new()
+            {
+                Number = 250, Pokemon = "HO-OH",
+                Moves =
+                [
+                    new LogTmHmMove { Number = "TM45", Move = "HAIL" },
+                    new LogTmHmMove { Number = "TM50", Move = "MUD-SLAP" },
+                    new LogTmHmMove { Number = "HM01", Move = "CUT" }
+                ]
+            }
+        };
+
+        var expectedTmHms = new List<LogTmHmCompatabilityByTmHm>
+        {
+            new()
+            {
+                Number = "TM01", Move = "HYPER BEAM",
+                Species =
+                [
+                    new LogPokemonSpecies{ Number = 3, Name = "VENUSAUR"},
+                    new LogPokemonSpecies{ Number = 4, Name = "CHARMANDER"},
+                    new LogPokemonSpecies{ Number = 29, Name = "NIDORAN♂"},
+                ]
+            },
+            new()
+            {
+                Number = "HM08", Move = "DIVE",
+                Species =
+                [
+                    new LogPokemonSpecies{ Number = 7, Name = "SQUIRTLE"},
+                    new LogPokemonSpecies{ Number = 8, Name = "WARTORTLE"},
+                    new LogPokemonSpecies{ Number = 20, Name = "RATICATE"},
+                ]
+            }
+        };
+
+        // Act
+        var result = UprLogParser.ParseLog(log).TmHmCompatibility;
+
+        // Assert
+        Assert.Equivalent(expectedSpecies, result.BySpecies);
+        Assert.Equivalent(expectedTmHms, result.ByTmHm);
     }
 }

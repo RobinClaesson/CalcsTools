@@ -14,4 +14,5 @@ public static class LogSectionIdentifiers
     public const string PokemonMoveSets = "PKMV";
     public const string TmMoves = "TMMV";
     public const string MoveTutorMoves = "MTMV";
+    public const string TmHmCompatability = "TMCB";
 }

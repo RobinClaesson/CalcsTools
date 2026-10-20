@@ -42,6 +42,7 @@ public static partial class UprLogParser
             PokemonMovesets = ParseMovesets(categorizedSections),
             TmMoves = ParseTmMoves(categorizedSections),
             TutorMoves = ParseTutorMoves(categorizedSections),
+            TmHmCompatibility = ParseTmHmCompatibility(categorizedSections),
             Sections = categorizedSections,
         };
     }
@@ -183,6 +184,38 @@ public static partial class UprLogParser
             ? [.. TutorMoveRegex().Matches(section.Content).Select(BuildLogTutorMove)]
             : [];
 
+    private static LogTmHmCompatibility ParseTmHmCompatibility(Dictionary<string, LogSection> sections)
+    {
+        if (!sections.TryGetValue(LogSectionIdentifiers.TmHmCompatability, out var section))
+        {
+            return new LogTmHmCompatibility();
+        }
+
+        var subsections = CompatibilitySubsectionRegex().Matches(section.Content);
+
+        var bySpeciesSubsection = subsections
+            .First(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.BySpecies)
+            .Groups["content"].Value;
+
+        var byTmHmSubsection = subsections
+            .First(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.ByTmHm)
+            .Groups["content"].Value;
+
+        return new LogTmHmCompatibility
+        {
+            BySpecies =
+            [
+                .. TmHmCompatibilityBySpeciesRegex().Matches(bySpeciesSubsection)
+                    .Select(BuildLogTmHmCompatabilityBySpecies)
+            ],
+            ByTmHm =
+            [
+                .. TmHmCompatibilityByTmHmRegex().Matches(byTmHmSubsection)
+                    .Select(BuildLogTmHmCompatabilityByTmHm)
+            ]
+        };
+    }
+
     private static Dictionary<string, string> ParseKeyValuePairs(string section) => KeyValuePairRegex()
         .Matches(section)
         .ToDictionary(
@@ -241,9 +274,9 @@ public static partial class UprLogParser
         Pp = int.Parse(match.Groups["pp"].Value),
     };
 
-    private static LogTmMove BuildLogTmMove(Match match) => new()
+    private static LogTmHmMove BuildLogTmMove(Match match) => new()
     {
-        TmNumber = int.Parse(match.Groups["number"].Value),
+        Number = match.Groups["number"].Value,
         Move = match.Groups["move"].Value,
     };
 
@@ -251,6 +284,32 @@ public static partial class UprLogParser
     {
         OldMove = match.Groups["old_move"].Value,
         NewMove = match.Groups["new_move"].Value,
+    };
+
+    private static LogTmHmCompatabilityBySpecies BuildLogTmHmCompatabilityBySpecies(Match match) => new()
+    {
+        Number = int.Parse(match.Groups["pokemon_number"].Value),
+        Pokemon = match.Groups["pokemon"].Value,
+        Moves =
+        [
+            .. match.Groups["tm_number"].Captures.Zip(match.Groups["move"].Captures,
+                (number, move) => new LogTmHmMove { Number = number.Value, Move = move.Value })
+        ]
+    };
+
+    private static LogTmHmCompatabilityByTmHm BuildLogTmHmCompatabilityByTmHm(Match match) => new()
+    {
+        Number = match.Groups["tm_number"].Value,
+        Move = match.Groups["move"].Value,
+        Species =
+        [
+            .. match.Groups["pokemon_number"].Captures.Zip(match.Groups["pokemon"].Captures,
+                (number, pokemon) => new LogPokemonSpecies
+                {
+                    Number = int.Parse(number.Value),
+                    Name = pokemon.Value
+                })
+        ]
     };
 
     [GeneratedRegex("^=+$", RegexOptions.Multiline)]
@@ -291,4 +350,15 @@ public static partial class UprLogParser
 
     [GeneratedRegex(@"^(?<old_move>\w[\w -]+\w)\s*->\s*(?<new_move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
     private static partial Regex TutorMoveRegex();
+
+    [GeneratedRegex(@"--(?<by>[\w\s\/]+):--(?<content>.*?)(?=--[\w\s\/]+:--|$)", RegexOptions.Singleline)]
+    private static partial Regex CompatibilitySubsectionRegex();
+
+    [GeneratedRegex(
+        @"#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s]+)(?:\s*(?<tm_number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w),?)*")]
+    private static partial Regex TmHmCompatibilityBySpeciesRegex();
+
+    [GeneratedRegex(
+        @"(?<tm_number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s,]+),?)*")]
+    private static partial Regex TmHmCompatibilityByTmHmRegex();
 }
