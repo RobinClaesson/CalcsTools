@@ -22,7 +22,7 @@ public static partial class UprLogParser
             .ToList();
 
         var logInfo = ParseKeyValuePairs(sections[1]);
-        var categorizedSections = sections.Skip(2).Select(ParseSection)
+        var categorizedSections = sections.Skip(2).Select(CategorizeSection)
             .Where(s => s != null)
             .Cast<LogSection>()
             .ToDictionary(
@@ -154,7 +154,7 @@ public static partial class UprLogParser
         };
     }
 
-    private static LogSection? ParseSection(string section)
+    private static LogSection? CategorizeSection(string section)
     {
         var sectionTitleMatch = SectionTitleRegex().Match(section);
 
