@@ -183,7 +183,7 @@ public static class LogTestData
     public const string LogTmMovesSection =
         """
         ( TM Moves {TMMV} )
-        
+
         TM01 HYPER BEAM
         TM02 BIDE
         TM03 THUNDER WAVE
@@ -193,7 +193,7 @@ public static class LogTestData
     public const string LogTutorMovesSection =
         """
         ( Move Tutor Moves {MTMV} )
-        
+
         MEGA PUNCH -> DESTINY BOND
         SWORDS DANCE -> SLUDGE    
         MUD-SLAP  -> ENDURE    
@@ -203,7 +203,7 @@ public static class LogTestData
     public const string LogTmHmCompatibilitySection =
         """
         ( TM/HM Compatibility {TMCB} )
-        
+
         --By Species:--
         #029 NIDORAN♀
         	TM45 HAIL, TM48 HYPNOSIS, HM02 FLY,
@@ -211,13 +211,33 @@ public static class LogTestData
         #250 HO-OH
             TM45 HAIL, TM50 MUD-SLAP, 
         	HM01 CUT
-        
+
         --By TM/HM:--
         TM01 HYPER BEAM
-        #003 VENUSAUR, #004 CHARMANDER,
-        #029 NIDORAN♂
+            #003 VENUSAUR, #004 CHARMANDER,
+            #029 NIDORAN♂
         HM08 DIVE
-        #007 SQUIRTLE, #008 WARTORTLE,
-        #020 RATICATE 
+            #007 SQUIRTLE, #008 WARTORTLE,
+            #020 RATICATE 
+        """;
+
+    public const string LogMoveTutorCompatibilitySection =
+        """
+        ( Move Tutor Compatibility {MTCB} )
+
+        --By Species:--
+        #029 NIDORAN♂
+        	DESTINY BOND, SLUDGE,
+        	MUD-SLAP
+        #250 HO-OH
+            SLUDGE, FOLLOW ME, KNOCK OFF
+
+        --By Tutor Move:--
+        HYPER BEAM
+            #003 VENUSAUR, #004 CHARMANDER,
+            #029 NIDORAN♂
+        MUD-SLAP
+            #007 SQUIRTLE, #008 WARTORTLE,
+            #020 RATICATE 
         """;
 }

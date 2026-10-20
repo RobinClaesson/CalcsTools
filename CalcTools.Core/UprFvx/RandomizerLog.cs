@@ -15,5 +15,6 @@ public record RandomizerLog
     public List<LogTmHmMove> TmMoves { get; init; } = [];
     public List<LogTutorMove> TutorMoves { get; init; } = [];
     public LogTmHmCompatibility TmHmCompatibility { get; init; } = new();
+    public LogTutorCompatibility TutorCompatibility { get; init; } = new();
     public Dictionary<string, LogSection> Sections { get; init; } = [];
 }

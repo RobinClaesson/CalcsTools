@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using CalcTools.Core.HzlaCalc;
 using CalcTools.Core.UprFvx.Constants;
-using CalcTools.Core.Extensions;
 
 namespace CalcTools.Core.UprFvx;
 
@@ -43,6 +42,7 @@ public static partial class UprLogParser
             TmMoves = ParseTmMoves(categorizedSections),
             TutorMoves = ParseTutorMoves(categorizedSections),
             TmHmCompatibility = ParseTmHmCompatibility(categorizedSections),
+            TutorCompatibility = ParseTutorCompatibility(categorizedSections),
             Sections = categorizedSections,
         };
     }
@@ -194,24 +194,56 @@ public static partial class UprLogParser
         var subsections = CompatibilitySubsectionRegex().Matches(section.Content);
 
         var bySpeciesSubsection = subsections
-            .First(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.BySpecies)
+            .FirstOrDefault(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.BySpecies)?
             .Groups["content"].Value;
 
         var byTmHmSubsection = subsections
-            .First(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.ByTmHm)
+            .FirstOrDefault(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.ByTmHm)?
             .Groups["content"].Value;
 
         return new LogTmHmCompatibility
         {
             BySpecies =
             [
-                .. TmHmCompatibilityBySpeciesRegex().Matches(bySpeciesSubsection)
+                .. TmHmCompatibilityBySpeciesRegex().Matches(bySpeciesSubsection ?? string.Empty)
                     .Select(BuildLogTmHmCompatabilityBySpecies)
             ],
             ByTmHm =
             [
-                .. TmHmCompatibilityByTmHmRegex().Matches(byTmHmSubsection)
+                .. TmHmCompatibilityByTmHmRegex().Matches(byTmHmSubsection ?? string.Empty)
                     .Select(BuildLogTmHmCompatabilityByTmHm)
+            ]
+        };
+    }
+
+    private static LogTutorCompatibility ParseTutorCompatibility(Dictionary<string, LogSection> sections)
+    {
+        if (!sections.TryGetValue(LogSectionIdentifiers.MoveTutorCompatability, out var section))
+        {
+            return new LogTutorCompatibility();
+        }
+
+        var subsections = CompatibilitySubsectionRegex().Matches(section.Content);
+
+        var bySpeciesSubsection = subsections
+            .FirstOrDefault(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.BySpecies)?
+            .Groups["content"].Value;
+
+        var byTutorMoveSubsection = subsections
+            .FirstOrDefault(m => m.Groups["by"].Value == LogCompatibilitySubsectionTitles.ByTutorMove)?
+            .Groups["content"].Value;
+
+        return new LogTutorCompatibility
+        {
+            BySpecies =
+            [
+                .. TutorCompatibilityBySpeciesRegex().Matches(bySpeciesSubsection ?? string.Empty)
+                    .Select(BuildLogTutorCompatibilityBySpecies)
+            ],
+            ByTutorMove =
+            [
+                .. TutorCompatibilityByTutorMoveRegex().Matches(byTutorMoveSubsection ?? string.Empty)
+                    .Select(BuildLogTutorCompatibilityByTutorMove)
             ]
         };
     }
@@ -301,16 +333,31 @@ public static partial class UprLogParser
     {
         Number = match.Groups["tm_number"].Value,
         Move = match.Groups["move"].Value,
-        Species =
-        [
-            .. match.Groups["pokemon_number"].Captures.Zip(match.Groups["pokemon"].Captures,
-                (number, pokemon) => new LogPokemonSpecies
-                {
-                    Number = int.Parse(number.Value),
-                    Name = pokemon.Value
-                })
-        ]
+        Species = BuildLogPokemonSpecies(match)
     };
+
+    private static LogTutorCompatibilityBySpecies BuildLogTutorCompatibilityBySpecies(Match match) => new()
+    {
+        Number = int.Parse(match.Groups["pokemon_number"].Value),
+        Pokemon = match.Groups["pokemon"].Value,
+        Moves = [.. match.Groups["move"].Captures.Select(c => c.Value)]
+    };
+
+    private static LogTutorCompatibilityByTutorMove BuildLogTutorCompatibilityByTutorMove(Match match) => new()
+    {
+        Move = match.Groups["move"].Value,
+        Species = BuildLogPokemonSpecies(match)
+    };
+
+    private static List<LogPokemonSpecies> BuildLogPokemonSpecies(Match match) =>
+    [
+        .. match.Groups["pokemon_number"].Captures.Zip(match.Groups["pokemon"].Captures,
+            (number, pokemon) => new LogPokemonSpecies
+            {
+                Number = int.Parse(number.Value),
+                Name = pokemon.Value
+            })
+    ];
 
     [GeneratedRegex("^=+$", RegexOptions.Multiline)]
     private static partial Regex DividerRegex();
@@ -361,4 +408,11 @@ public static partial class UprLogParser
     [GeneratedRegex(
         @"(?<tm_number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s,]+),?)*")]
     private static partial Regex TmHmCompatibilityByTmHmRegex();
+
+    [GeneratedRegex(@"#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s]+)(?:\s*(?<move>\w[\w -]+\w),?)*")]
+    private static partial Regex TutorCompatibilityBySpeciesRegex();
+
+    [GeneratedRegex(
+        @"(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s,]+),?)*")]
+    private static partial Regex TutorCompatibilityByTutorMoveRegex();
 }

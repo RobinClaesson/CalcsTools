@@ -58,6 +58,7 @@ public class UprLogParserTests
         Assert.Contains(LogSectionIdentifiers.TmMoves, result.Keys);
         Assert.Contains(LogSectionIdentifiers.MoveTutorMoves, result.Keys);
         Assert.DoesNotContain(LogSectionIdentifiers.TmHmCompatability, result.Keys);
+        Assert.DoesNotContain(LogSectionIdentifiers.MoveTutorCompatability, result.Keys);
     }
 
     [Fact]
@@ -350,9 +351,9 @@ public class UprLogParserTests
                 Number = "TM01", Move = "HYPER BEAM",
                 Species =
                 [
-                    new LogPokemonSpecies{ Number = 3, Name = "VENUSAUR"},
-                    new LogPokemonSpecies{ Number = 4, Name = "CHARMANDER"},
-                    new LogPokemonSpecies{ Number = 29, Name = "NIDORAN♂"},
+                    new LogPokemonSpecies { Number = 3, Name = "VENUSAUR" },
+                    new LogPokemonSpecies { Number = 4, Name = "CHARMANDER" },
+                    new LogPokemonSpecies { Number = 29, Name = "NIDORAN♂" },
                 ]
             },
             new()
@@ -360,9 +361,9 @@ public class UprLogParserTests
                 Number = "HM08", Move = "DIVE",
                 Species =
                 [
-                    new LogPokemonSpecies{ Number = 7, Name = "SQUIRTLE"},
-                    new LogPokemonSpecies{ Number = 8, Name = "WARTORTLE"},
-                    new LogPokemonSpecies{ Number = 20, Name = "RATICATE"},
+                    new LogPokemonSpecies { Number = 7, Name = "SQUIRTLE" },
+                    new LogPokemonSpecies { Number = 8, Name = "WARTORTLE" },
+                    new LogPokemonSpecies { Number = 20, Name = "RATICATE" },
                 ]
             }
         };
@@ -373,5 +374,57 @@ public class UprLogParserTests
         // Assert
         Assert.Equivalent(expectedSpecies, result.BySpecies);
         Assert.Equivalent(expectedTmHms, result.ByTmHm);
+    }
+
+    [Fact]
+    public void ParseLog_ParsesMoveTutorCompatibility()
+    {
+        // Arrange 
+        var log = LogTestData.BuildTestLog(LogTestData.LogMoveTutorCompatibilitySection);
+
+        var expectedSpecies = new List<LogTutorCompatibilityBySpecies>
+        {
+            new()
+            {
+                Number = 029, Pokemon = "NIDORAN♂",
+                Moves = ["DESTINY BOND", "SLUDGE", "MUD-SLAP"],
+            },
+            new()
+            {
+                Number = 250, Pokemon = "HO-OH",
+                Moves = ["SLUDGE", "FOLLOW ME", "KNOCK OFF"],
+            }
+        };
+
+        var expectedTutorMoves = new List<LogTutorCompatibilityByTutorMove>
+        {
+            new()
+            {
+                Move = "HYPER BEAM",
+                Species =
+                [
+                    new LogPokemonSpecies { Number = 3, Name = "VENUSAUR" },
+                    new LogPokemonSpecies { Number = 4, Name = "CHARMANDER" },
+                    new LogPokemonSpecies { Number = 29, Name = "NIDORAN♂" },
+                ]
+            },
+            new()
+            {
+                Move = "MUD-SLAP",
+                Species =
+                [
+                    new LogPokemonSpecies { Number = 7, Name = "SQUIRTLE" },
+                    new LogPokemonSpecies { Number = 8, Name = "WARTORTLE" },
+                    new LogPokemonSpecies { Number = 20, Name = "RATICATE" },
+                ]
+            }
+        };
+
+        // Act
+        var result = UprLogParser.ParseLog(log).TutorCompatibility;
+
+        // Assert
+        Assert.Equivalent(expectedSpecies, result.BySpecies);
+        Assert.Equivalent(expectedTutorMoves, result.ByTutorMove);
     }
 }

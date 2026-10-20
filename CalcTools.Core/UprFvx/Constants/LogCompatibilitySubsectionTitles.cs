@@ -4,4 +4,5 @@ public static class LogCompatibilitySubsectionTitles
 {
     public const string BySpecies = "By Species";
     public const string ByTmHm = "By TM/HM";
+    public const string ByTutorMove = "By Tutor Move";
 }

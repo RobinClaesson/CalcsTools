@@ -15,4 +15,5 @@ public static class LogSectionIdentifiers
     public const string TmMoves = "TMMV";
     public const string MoveTutorMoves = "MTMV";
     public const string TmHmCompatability = "TMCB";
+    public const string MoveTutorCompatability = "MTCB";
 }
