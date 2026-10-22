@@ -1,0 +1,14 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider IsDarkMode="true" Theme="@Theme"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudMainContent Class="d-flex flex-column justify-center align-center gap-3" Style="min-height: 90vh;">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+<Footer/>

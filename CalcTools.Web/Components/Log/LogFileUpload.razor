@@ -1,0 +1,31 @@
+@inherits LogComponentBase
+
+<PaperBase MinWidth="420px">
+    <MudText Typo="Typo.h2" Color="Color.Primary">Universal Pokémon Randomizer Log</MudText>
+
+    <MudFileUpload @bind-Files="_randomizerLogFile" Style="min-width: 200px">
+        <CustomContent>
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Filled.UploadFile"
+                       OnClick="@context.OpenFilePickerAsync"
+                       Color="Color.Default">
+                Choose Log File
+            </MudButton>
+        </CustomContent>
+        <SelectedTemplate>
+            <MudText Typo="Typo.h3"
+                     Align="Align.Center"
+                     Class="mt-2">
+                @GetContextFileName(context)
+            </MudText>
+        </SelectedTemplate>
+    </MudFileUpload>
+
+    <MudButton Variant="Variant.Outlined"
+        Color="Color.Primary"
+        OnClick="ReadRandomizerLog"
+        Disabled="@(_randomizerLogFile is null)"
+        Class="mt-2">
+        Read Randomization Log
+    </MudButton>
+</PaperBase>

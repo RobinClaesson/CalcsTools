@@ -26,4 +26,5 @@ public static class RandomizationOverviewKeys
     public const string PokemonPalettes = "Pokemon Palettes";
     public const string IntroPokemon = "Intro Pokemon";
     public const string RandomizedChanged = "Randomized/Changed";
+    public const string Unchanged = "Unchanged";
 }

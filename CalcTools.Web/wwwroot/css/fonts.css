@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'pokemon-emerald';
+    src: url('../fonts/pokemon-emerald.otf') format('OpenType');
+}
+
+@font-face {
+    font-family: 'computer-says-no';
+    src: url('../fonts/computer-says-no.otf') format('OpenType');
+}

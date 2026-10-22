@@ -1,0 +1,9 @@
+<PaperBase>
+    @foreach (var typo in Enum.GetValues<Typo>())
+    {
+        <MudText Typo="@typo">This is @typo</MudText>
+    }
+    
+    <MudButton> Button </MudButton>
+
+</PaperBase>

@@ -1,0 +1,13 @@
+﻿@page "/"
+@using CalcTools.Web.Components.CalcData
+@using CalcTools.Web.Components.Log
+@using LogFileInfo = CalcTools.Web.Components.Log.LogFileInfo
+
+<PageTitle>Calc Tools</PageTitle>
+
+<MudText Typo="Typo.h1" Color="Color.Primary" Class="mb-2">
+    Create Randomizer Calc Data
+</MudText>
+<LogFileUpload @bind-Log="_log" @bind-FileName="_logFileName"/>
+<LogFileInfo @bind-Log="_log" OnCreateCalcDataClick="OnCreateCalcDataClick"/>
+<CalcDataJsonDisplay @bind-Json="_calcDataJson" @bind-LogFileName="_logFileName"/>

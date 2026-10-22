@@ -1,0 +1,50 @@
+@inherits LogComponentBase
+
+<PaperBase Visible="@(Log is not null)" MinWidth="600px" MaxWidth="60%">
+    @if (Log is not null)
+    {
+        <MudText Typo="Typo.h2" Color="Color.Primary">Parsed Log Info</MudText>
+        <MudGrid Justify="Justify.SpaceEvenly">
+            <LogFileInfoItem Key="Base game" Value="@Log.BaseGame"/>
+            <LogFileInfoItem Key="Randomizer version" Value="@Log.RandomizerVersion"/>
+            <LogFileInfoItem Key="Random seed" Value="@Log.RandomSeed"/>
+        </MudGrid>
+
+        <MudText Typo="Typo.h3" Color="Color.Primary">@ChangesHeaderText</MudText>
+        <MudGrid Justify="Justify.Center">
+            @if (ShowAllChanges)
+            {
+                foreach (var change in Changes.Where(kvp => kvp.Value))
+                {
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.body1" Align="Align.Center">@change.Key</MudText>
+                    </MudItem>
+                }
+                <MudFlexBreak/>
+                foreach (var tweak in MiscTweaks.Where(kvp => kvp.Value))
+                {
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.body1" Align="Align.Center">@tweak.Key</MudText>
+                    </MudItem>
+                }
+            }
+            else
+            {
+                foreach (var change in ChangesEffectingCalc.Where(kvp => kvp.Value))
+                {
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.body1" Align="Align.Center">@change.Key</MudText>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+
+        <MudDivider Class="my-2"/>
+        <MudButton FullWidth="true"
+                   Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   OnClick="OnCreateCalcDataClick">
+            Create Calc Data
+        </MudButton>
+    }
+</PaperBase>

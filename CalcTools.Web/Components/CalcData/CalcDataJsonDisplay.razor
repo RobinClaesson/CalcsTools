@@ -1,0 +1,15 @@
+<PaperBase Visible="@(Json is not null)" TransitionMs="1000" MinWidth="800px" MaxWidth="60%">
+    <MudText Typo="Typo.h2" Color="Color.Primary">Calc Data Json</MudText>
+    <MudTextField T="string"
+                  Variant="Variant.Outlined"
+                  MaxLines="10"
+                  Sizing="InputSizing.Auto"
+                  FullWidth="true"
+                  @bind-Value="Json"
+                  ReadOnly="true"
+                  Style="font-family: 'computer-says-no', 'Courier New', monospace"/>
+    <MudButtonGroup Variant="Variant.Text" Color="Color.Primary">
+        <MudButton StartIcon="@Icons.Material.Outlined.ContentCopy" OnClick="CopyAsync">Copy</MudButton>
+        <MudButton StartIcon="@Icons.Material.Outlined.Download" OnClick="DownloadAsync">Download</MudButton>
+    </MudButtonGroup>
+</PaperBase>
