@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/CI/">
+    <File Path=".github\workflows\Deploy-GitHub-Pages.yml" />
     <File Path=".github\workflows\Tests.yml" />
   </Folder>
   <Folder Name="/SolutionItems/">
