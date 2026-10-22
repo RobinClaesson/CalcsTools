@@ -5,12 +5,11 @@ on:
     branches: [ "main", "feature/*" ]
   pull_request:
     branches: [ "main" ]
-
+  workflow_call: 
+    
 jobs:
-  build-and-test:
-
+  test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET

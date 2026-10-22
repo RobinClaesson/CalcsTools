@@ -20,20 +20,10 @@ defaults:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: 10.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-      - name: Unit Tests
-        run: dotnet test CalcTools.Tests/CalcTools.Tests.csproj --configuration Release --no-build --no-restore --verbosity normal
-        
+    uses: ./.github/workflows/Tests.yml
+    permissions:
+      contents: read
+      
   build:
     runs-on: ubuntu-latest
     needs: test
