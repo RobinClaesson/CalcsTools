@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/CI/">
+    <File Path=".github\workflows\Tests.yml" />
+  </Folder>
+  <Folder Name="/SolutionItems/">
+    <File Path="global.json" />
+  </Folder>
   <Project Path="CalcTools.CLI\CalcTools.CLI.csproj" />
   <Project Path="CalcTools.Core\CalcTools.Core.csproj" />
   <Project Path="CalcTools.Tests\CalcTools.Tests.csproj" />
