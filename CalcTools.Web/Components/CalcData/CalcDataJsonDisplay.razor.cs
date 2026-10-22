@@ -1,5 +1,6 @@
 using CalcTools.Web.Services;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace CalcTools.Web.Components.CalcData;
 
@@ -12,6 +13,7 @@ public partial class CalcDataJsonDisplay : ComponentBase
 
     [Inject] private IFileDownloadService FileDownloadService { get; set; } = null!;
     [Inject] private IClipboardService ClipboardService { get; set; } = null!;
+    [Inject] private ISnackbar Snackbar { get; set; } = null!;
 
     private async Task DownloadAsync()
     {
@@ -31,5 +33,6 @@ public partial class CalcDataJsonDisplay : ComponentBase
             return;
 
         await ClipboardService.SetAsync(Json);
+        Snackbar.Add("Calc Data Copied", Severity.Success, cfg => { cfg.Icon = Icons.Material.Outlined.ContentCopy; });
     }
 }
