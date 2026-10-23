@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using CalcTools.Core.Extensions;
 using CalcTools.Core.HzlaCalc;
 using CalcTools.Core.UprFvx.Constants;
 
@@ -161,15 +162,15 @@ public static partial class UprLogParser
 
         return new LogMoveset
         {
-            Number = int.Parse(info.Groups["number"].Value),
+            Number = info.Groups["number"].IntValue,
             Name = info.Groups["name"].Value,
             Evolution = info.Groups["evolution"].Value,
-            Hp = int.Parse(stats.Groups["stat"].Captures[0].Value),
-            Attack = int.Parse(stats.Groups["stat"].Captures[1].Value),
-            Defence = int.Parse(stats.Groups["stat"].Captures[2].Value),
-            SpecialAttack = int.Parse(stats.Groups["stat"].Captures[3].Value),
-            SpecialDefence = int.Parse(stats.Groups["stat"].Captures[4].Value),
-            Speed = int.Parse(stats.Groups["stat"].Captures[5].Value),
+            Hp = stats.Groups["stat"].Captures[0].IntValue,
+            Attack = stats.Groups["stat"].Captures[1].IntValue,
+            Defence = stats.Groups["stat"].Captures[2].IntValue,
+            SpecialAttack = stats.Groups["stat"].Captures[3].IntValue,
+            SpecialDefence = stats.Groups["stat"].Captures[4].IntValue,
+            Speed = stats.Groups["stat"].Captures[5].IntValue,
             LevelUpMoves = [.. moves[true].Select(BuildLogMovesetLevelUpMove)],
             EggMoves = [.. moves[false].Select(BuildLogMovesetMove)]
         };
@@ -249,30 +250,31 @@ public static partial class UprLogParser
         };
     }
 
-    private static List<LogTrainer> ParseTrainerPokemon(Dictionary<string, LogSection> sections)
+    private static List<LogTrainer> ParseTrainerPokemon(Dictionary<string, LogSection> sections) =>
+        sections.TryGetValue(LogSectionIdentifiers.TrainerPokemon, out var section)
+            ?
+            [
+                .. section.Content.Split('#',
+                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(ParseLogTrainer)
+            ]
+            : [];
+
+    private static LogTrainer ParseLogTrainer(string logTrainer)
     {
-        if (!sections.TryGetValue(LogSectionIdentifiers.TrainerPokemon, out var section))
+        var trainerInfo = TrainerInfoRegex().Match(logTrainer);
+
+        return new LogTrainer
         {
-            return [];
-        }
-
-        var trainerInfos = TrainerInfoRegex().Matches(section.Content);
-        var pokemonSets = TrainerInfoRegex().Split(section.Content)
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .Chunk(4).Select(c => c.Last().Trim())
-            .Select(s => TrainerPokemonsRegex().Matches(s).Select(BuildLogTrainerPokemon))
-            .ToList();
-
-        return
-        [
-            .. trainerInfos.Zip(pokemonSets, (trainerInfo, pokemons) => new LogTrainer
-            {
-                Number = int.Parse(trainerInfo.Groups["number"].Value),
-                Name = trainerInfo.Groups["name"].Value,
-                Id = trainerInfo.Groups["id"].Value,
-                Pokemon = [.. pokemons]
-            })
-        ];
+            Number = trainerInfo.Groups["number"].IntValue,
+            Name = trainerInfo.Groups["name"].Value,
+            Id = trainerInfo.Groups["id"].Value,
+            Pokemon =
+            [
+                .. TrainerPokemonsRegex().Matches(logTrainer)
+                    .Select(BuildLogTrainerPokemon)
+            ],
+        };
     }
 
     private static Dictionary<string, string> ParseKeyValuePairs(string section) => KeyValuePairRegex()
@@ -285,29 +287,29 @@ public static partial class UprLogParser
 
     private static LogPokemon BuildLogPokemon(Match match) => new()
     {
-        Number = int.Parse(match.Groups["number"].Value),
+        Number = match.Groups["number"].IntValue,
         Name = match.Groups["name"].Value,
         Types = [.. match.Groups["type"].Captures.Select(c => c.Value)],
-        BaseStatTotal = int.Parse(match.Groups["stat"].Captures[0].Value),
-        Hp = int.Parse(match.Groups["stat"].Captures[1].Value),
-        Attack = int.Parse(match.Groups["stat"].Captures[2].Value),
-        Defence = int.Parse(match.Groups["stat"].Captures[3].Value),
-        SpecialAttack = int.Parse(match.Groups["stat"].Captures[4].Value),
-        SpecialDefence = int.Parse(match.Groups["stat"].Captures[5].Value),
-        Speed = int.Parse(match.Groups["stat"].Captures[6].Value),
+        BaseStatTotal = match.Groups["stat"].Captures[0].IntValue,
+        Hp = match.Groups["stat"].Captures[1].IntValue,
+        Attack = match.Groups["stat"].Captures[2].IntValue,
+        Defence = match.Groups["stat"].Captures[3].IntValue,
+        SpecialAttack = match.Groups["stat"].Captures[4].IntValue,
+        SpecialDefence = match.Groups["stat"].Captures[5].IntValue,
+        Speed = match.Groups["stat"].Captures[6].IntValue,
         Abilities = [.. match.Groups["ability"].Captures.Select(c => c.Value)],
         HeldItems = [.. match.Groups["item"].Captures.Select(c => c.Value)]
     };
 
     private static LogMovesetLevelUpMove BuildLogMovesetLevelUpMove(Match match) => new()
     {
-        Level = int.Parse(match.Groups["level"].Value),
+        Level = match.Groups["level"].IntValue,
         Name = match.Groups["name"].Value,
         Type = match.Groups["type"].Value,
         Category = match.Groups["category"].Value,
         Power = int.TryParse(match.Groups["power"].Value, out var power) ? power : 0,
-        Pp = int.Parse(match.Groups["pp"].Value),
-        Accuracy = int.Parse(match.Groups["accuracy"].Value),
+        Pp = match.Groups["pp"].IntValue,
+        Accuracy = match.Groups["accuracy"].IntValue,
         Stab = match.Groups["stab"].Success
     };
 
@@ -317,20 +319,20 @@ public static partial class UprLogParser
         Type = match.Groups["type"].Value,
         Category = match.Groups["category"].Value,
         Power = int.TryParse(match.Groups["power"].Value, out var power) ? power : 0,
-        Pp = int.Parse(match.Groups["pp"].Value),
-        Accuracy = int.Parse(match.Groups["accuracy"].Value),
+        Pp = match.Groups["pp"].IntValue,
+        Accuracy = match.Groups["accuracy"].IntValue,
         Stab = match.Groups["stab"].Success
     };
 
     private static LogMove BuildLogMove(Match match) => new()
     {
-        Number = int.Parse(match.Groups["number"].Value),
+        Number = match.Groups["number"].IntValue,
         OldName = match.Groups["old_name"].Success ? match.Groups["old_name"].Value : null,
         Name = match.Groups["name"].Value,
         Type = match.Groups["type"].Value,
-        Power = int.Parse(match.Groups["power"].Value),
-        Accuracy = int.Parse(match.Groups["accuracy"].Value),
-        Pp = int.Parse(match.Groups["pp"].Value),
+        Power = match.Groups["power"].IntValue,
+        Accuracy = match.Groups["accuracy"].IntValue,
+        Pp = match.Groups["pp"].IntValue,
     };
 
     private static LogTmHmMove BuildLogTmMove(Match match) => new()
@@ -347,7 +349,7 @@ public static partial class UprLogParser
 
     private static LogTmHmCompatabilityBySpecies BuildLogTmHmCompatabilityBySpecies(Match match) => new()
     {
-        Number = int.Parse(match.Groups["pokemon_number"].Value),
+        Number = match.Groups["pokemon_number"].IntValue,
         Pokemon = match.Groups["pokemon"].Value,
         Moves =
         [
@@ -365,7 +367,7 @@ public static partial class UprLogParser
 
     private static LogTutorCompatibilityBySpecies BuildLogTutorCompatibilityBySpecies(Match match) => new()
     {
-        Number = int.Parse(match.Groups["pokemon_number"].Value),
+        Number = match.Groups["pokemon_number"].IntValue,
         Pokemon = match.Groups["pokemon"].Value,
         Moves = [.. match.Groups["move"].Captures.Select(c => c.Value)]
     };
@@ -381,7 +383,7 @@ public static partial class UprLogParser
         .. match.Groups["pokemon_number"].Captures.Zip(match.Groups["pokemon"].Captures,
             (number, pokemon) => new LogPokemonSpecies
             {
-                Number = int.Parse(number.Value),
+                Number = number.IntValue,
                 Name = pokemon.Value
             })
     ];
@@ -390,7 +392,7 @@ public static partial class UprLogParser
     {
         Pokemon = match.Groups["pokemon"].Value,
         Item = match.Groups["item"].Success ? match.Groups["item"].Value : null,
-        Level = int.Parse(match.Groups["level"].Value),
+        Level = match.Groups["level"].IntValue,
         Ability = match.Groups["ability"].Success ? match.Groups["ability"].Value : null,
         Moves = [.. match.Groups["move"].Captures.Select(c => c.Value)]
     };
@@ -451,10 +453,11 @@ public static partial class UprLogParser
     [GeneratedRegex(@"(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s,]+),?)*")]
     private static partial Regex TutorCompatibilityByTutorMoveRegex();
 
-    [GeneratedRegex(@"#(?<number>\d+)\s*\((?<name>[^\)]+)\)@(?<id>[A-Z0-9]+)(?:\s*-)?")]
+    [GeneratedRegex(@"(?<number>\d+)\s*\((?<name>[^\)]+)\)@(?<id>[A-Z0-9]+)(?:\s*-)?")]
     private static partial Regex TrainerInfoRegex();
 
     [GeneratedRegex(
-        @"(?<pokemon>\w[^\s,]+)(?:@(?<item>\w[\w\s]+\w)\s*)?\s*Lv(?<level>\d+)(?:,\s*Ability:\s*(?<ability>\w[\w\s]+\w)\s*-(?:\s*(?<move>\w[\w -]+\w),?){0,4})?")]
+        @"(?:^|(?:[-,]\s*))(?<pokemon>\w[^\s,]+)(?:@(?<item>\w[\w\s]+\w)\s*)?\s*Lv(?<level>\d+)(?:,\s*Ability:\s*(?<ability>\w[\w\s]+\w)\s*-(?:\s*(?<move>\w[\w -]+\w),?){0,4})?",
+        RegexOptions.Multiline)]
     private static partial Regex TrainerPokemonsRegex();
 }
