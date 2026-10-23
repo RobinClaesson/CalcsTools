@@ -6,4 +6,5 @@ public record LogTrainer
     public required string Name { get; init; }
     public required string Id { get; init; }
     public required List<LogTrainerPokemon> Pokemon { get; init; }
+    public string? BattleStyle { get; init; }
 }

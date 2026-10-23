@@ -439,7 +439,7 @@ public class UprLogParserTests
         {
             new()
             {
-                Number = 1, Name = "HIKER SAWYER", Id = "310058",
+                Number = 1, Name = "HIKER SAWYER", Id = "310058", BattleStyle = "Single",
                 Pokemon =
                 [
                     new LogTrainerPokemon { Pokemon = "HARIYAMA", Level = 21, Item = null }
@@ -447,7 +447,7 @@ public class UprLogParserTests
             },
             new()
             {
-                Number = 9, Name = "[PK][MN] BREEDER GABRIELLE", Id = "310198",
+                Number = 9, Name = "[PK][MN] BREEDER GABRIELLE", Id = "310198", BattleStyle = null,
                 Pokemon =
                 [
                     new LogTrainerPokemon { Pokemon = "LEDIAN", Level = 46, Item = null },
@@ -459,7 +459,7 @@ public class UprLogParserTests
             },
             new()
             {
-                Number = 34, Name = "AQUA LEADER ARCHIE", Id = "310580",
+                Number = 34, Name = "AQUA LEADER ARCHIE", Id = "310580",  BattleStyle = "Double",
                 Pokemon =
                 [
                     new LogTrainerPokemon

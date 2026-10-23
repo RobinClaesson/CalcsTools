@@ -263,17 +263,16 @@ public static partial class UprLogParser
     private static LogTrainer ParseLogTrainer(string logTrainer)
     {
         var trainerInfo = TrainerInfoRegex().Match(logTrainer);
+        var battleStyle = TrainerBattleStyleRegex().Match(logTrainer);
+        var pokemon = TrainerPokemonsRegex().Matches(logTrainer);
 
         return new LogTrainer
         {
             Number = trainerInfo.Groups["number"].IntValue,
             Name = trainerInfo.Groups["name"].Value,
             Id = trainerInfo.Groups["id"].Value,
-            Pokemon =
-            [
-                .. TrainerPokemonsRegex().Matches(logTrainer)
-                    .Select(BuildLogTrainerPokemon)
-            ],
+            Pokemon = [.. pokemon.Select(BuildLogTrainerPokemon)],
+            BattleStyle = battleStyle.Success ? battleStyle.Groups["style"].Value : null
         };
     }
 
@@ -460,4 +459,7 @@ public static partial class UprLogParser
         @"(?:^|(?:[-,]\s*))(?<pokemon>\w[^\s,]+)(?:@(?<item>\w[\w\s]+\w)\s*)?\s*Lv(?<level>\d+)(?:,\s*Ability:\s*(?<ability>\w[\w\s]+\w)\s*-(?:\s*(?<move>\w[\w -]+\w),?){0,4})?",
         RegexOptions.Multiline)]
     private static partial Regex TrainerPokemonsRegex();
+
+    [GeneratedRegex(@"\(Battle\s*Style:\s*(?<style>\w+)\)")]
+    private static partial Regex TrainerBattleStyleRegex();
 }
