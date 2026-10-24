@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using CalcTools.Core.BaseData.Json;
-using CalcTools.Core.HzlaCalc.Json;
 
 namespace CalcTools.Core.BaseData;
 
