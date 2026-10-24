@@ -8,6 +8,7 @@
   </Folder>
   <Project Path="CalcTools.CLI\CalcTools.CLI.csproj" />
   <Project Path="CalcTools.Core\CalcTools.Core.csproj" />
+  <Project Path="CalcTools.DataBuilder/CalcTools.DataBuilder.csproj" />
   <Project Path="CalcTools.Tests\CalcTools.Tests.csproj" />
   <Project Path="CalcTools.Web/CalcTools.Web.csproj" />
 </Solution>
