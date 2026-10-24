@@ -163,7 +163,7 @@ public static partial class UprLogParser
         return new LogMoveset
         {
             Number = info.Groups["number"].IntValue,
-            Name = info.Groups["name"].Value,
+            Pokemon = info.Groups["name"].Value,
             Evolution = info.Groups["evolution"].Value,
             Hp = stats.Groups["stat"].Captures[0].IntValue,
             Attack = stats.Groups["stat"].Captures[1].IntValue,
@@ -178,7 +178,7 @@ public static partial class UprLogParser
 
     private static List<LogTmHmMove> ParseTmMoves(Dictionary<string, LogSection> sections) =>
         sections.TryGetValue(LogSectionIdentifiers.TmMoves, out var section)
-            ? [.. TmMoveRegex().Matches(section.Content).Select(BuildLogTmMove)]
+            ? [.. TmMoveRegex().Matches(section.Content).Select(BuildLogTmHmMove)]
             : [];
 
     private static List<LogTutorMove> ParseTutorMoves(Dictionary<string, LogSection> sections) =>
@@ -334,9 +334,10 @@ public static partial class UprLogParser
         Pp = match.Groups["pp"].IntValue,
     };
 
-    private static LogTmHmMove BuildLogTmMove(Match match) => new()
+    private static LogTmHmMove BuildLogTmHmMove(Match match) => new()
     {
-        Number = match.Groups["number"].Value,
+        Name = match.Groups["name"].Value,
+        Number = match.Groups["number"].IntValue,
         Move = match.Groups["move"].Value,
     };
 
@@ -352,14 +353,23 @@ public static partial class UprLogParser
         Pokemon = match.Groups["pokemon"].Value,
         Moves =
         [
-            .. match.Groups["tm_number"].Captures.Zip(match.Groups["move"].Captures,
-                (number, move) => new LogTmHmMove { Number = number.Value, Move = move.Value })
+            .. match.Groups["tm_name"].Captures
+                .Zip(match.Groups["tm_number"].Captures, match.Groups["move"].Captures)
+                .Select(c => BuildLogTmHmMove(c.First, c.Second, c.Third))
         ]
+    };
+
+    private static LogTmHmMove BuildLogTmHmMove(Capture name, Capture number, Capture move) => new()
+    {
+        Name = name.Value,
+        Number = number.IntValue,
+        Move = move.Value
     };
 
     private static LogTmHmCompatabilityByTmHm BuildLogTmHmCompatabilityByTmHm(Match match) => new()
     {
-        Number = match.Groups["tm_number"].Value,
+        Name = match.Groups["tm_name"].Value,
+        Number = match.Groups["tm_number"].IntValue,
         Move = match.Groups["move"].Value,
         Species = BuildLogPokemonSpecies(match)
     };
@@ -420,16 +430,16 @@ public static partial class UprLogParser
     private static partial Regex MovesetMovesRegex();
 
     [GeneratedRegex(
-        @"^\s*(?<number>\d+)\|(?<name>\w[^|\s]+\w)\s*\|(?<type>\w+)(?:\/(?<type>\w+))?\s*\|(?:\s*(?<stat>\d+)\|){7}(?<ability>\w[\w\s]+\w)\s*\|(?:(?<ability>\w[\w\s]+\w)|-+)\s*\|(?:(?<item>\w[\w\s]+\([\w%]+\))(?:, )?)*$",
+        @"^\s*(?<number>\d+)\|(?<name>\w[^|]+[^\s])\s*\|(?<type>\w+)(?:\/(?<type>\w+))?\s*\|(?:\s*(?<stat>\d+)\|){7}(?<ability>\w[\w\s]+\w)\s*\|(?:(?<ability>\w[\w\s]+\w)|-+)\s*\|(?:(?<item>\w[^(]+\([^)]+\))(?:,\s*)?)*$",
         RegexOptions.Multiline)]
     private static partial Regex PokemonStatisticsRegex();
 
     [GeneratedRegex(
-        @"^(?<number>\d+)\s*\|(?:(?<old_name>\w[\w\s-]+\w)\s*\|)?(?<name>\w[\w\s-]+\w)\s*\|(?<type>[\w?]+)\s*\|(?<power>\d+)\s*\|(?<accuracy>\d+)%\s*\|(?<pp>\d+)\s*$",
+        @"^(?<number>\d+)\s*\|(?:(?<old_name>\w[^|]+\w)\s*\|)?(?<name>\w[^|]+\w)\s*\|(?<type>[\w?]+)\s*\|(?<power>\d+)\s*\|(?<accuracy>\d+)%\s*\|(?<pp>\d+)\s*$",
         RegexOptions.Multiline)]
     private static partial Regex MoveDataRegex();
 
-    [GeneratedRegex(@"^(?<number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
+    [GeneratedRegex(@"^(?<name>(?:TM|HM)(?<number>\d+))\s*(?<move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
     private static partial Regex TmMoveRegex();
 
     [GeneratedRegex(@"^(?<old_move>\w[\w -]+\w)\s*->\s*(?<new_move>\w[\w -]+\w)\s*$", RegexOptions.Multiline)]
@@ -439,24 +449,24 @@ public static partial class UprLogParser
     private static partial Regex CompatibilitySubsectionRegex();
 
     [GeneratedRegex(
-        @"#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s]+)(?:\s*(?<tm_number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w),?)*")]
+        @"#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\n]+)(?:\s*(?<tm_name>(?:TM|HM)(?<tm_number>\d+))\s*(?<move>\w[\w -]+\w),?)*")]
     private static partial Regex TmHmCompatibilityBySpeciesRegex();
 
     [GeneratedRegex(
-        @"(?<tm_number>(?:TM|HM)\d+)\s*(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s,]+),?)*")]
+        @"(?<tm_name>(?:TM|HM)(?<tm_number>\d+))\s*(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^,\n]+),?)*")]
     private static partial Regex TmHmCompatibilityByTmHmRegex();
 
-    [GeneratedRegex(@"#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s]+)(?:\s*(?<move>\w[\w -]+\w),?)*")]
+    [GeneratedRegex(@"#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^,\n]+)(?:\s*(?<move>\w[\w -]+\w),?)*")]
     private static partial Regex TutorCompatibilityBySpeciesRegex();
 
-    [GeneratedRegex(@"(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^\s,]+),?)*")]
+    [GeneratedRegex(@"(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^,\n]+),?)*")]
     private static partial Regex TutorCompatibilityByTutorMoveRegex();
 
     [GeneratedRegex(@"(?<number>\d+)\s*\((?<name>[^\)]+)\)@(?<id>[A-Z0-9]+)(?:\s*-)?")]
     private static partial Regex TrainerInfoRegex();
 
     [GeneratedRegex(
-        @"(?:^|(?:[-,]\s*))(?<pokemon>\w[^\s,]+)(?:@(?<item>\w[\w\s]+\w)\s*)?\s*Lv(?<level>\d+)(?:,\s*Ability:\s*(?<ability>\w[\w\s]+\w)\s*-(?:\s*(?<move>\w[\w -]+\w),?){0,4})?",
+        @"(?:^|(?:[-,]\s*))(?<pokemon>\w[^@,()\r\n]*?)(?:@(?<item>\w[^,\r\n]*?))?\s*Lv(?<level>\d+)(?:,\s*Ability:\s*(?<ability>\w[\w\s]+\w)\s*-(?:\s*(?<move>\w[\w -]+\w),?){0,4})?",
         RegexOptions.Multiline)]
     private static partial Regex TrainerPokemonsRegex();
 

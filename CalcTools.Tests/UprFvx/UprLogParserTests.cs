@@ -6,6 +6,9 @@ namespace CalcTools.Tests.UprFvx;
 
 public class UprLogParserTests
 {
+    private static readonly List<string> UnconventionalNames =
+        ["NIDORAN♂", "NIDORAN♀", "FARFETCH’D", "MR. MIME", "PORYGON2", "HO-OH"];
+
     [Theory]
     [MemberData(nameof(LogTestData.PokemonTypes), MemberType = typeof(LogTestData))]
     public void ParsePokemonType_ParsesCorrectType(string logType, PokemonType expectedType)
@@ -117,23 +120,23 @@ public class UprLogParserTests
         // Arrange
         var log = LogTestData.BuildTestLog(LogTestData.LogPokemonStatisticsSection);
 
-        var expectedPokemon = new List<LogPokemon>
+        var expectedFullInfo = new List<LogPokemon>
         {
             new()
             {
-                Number = 1, Name = "BULBASAUR", Types = ["ELECTRIC", "FIRE"], BaseStatTotal = 318,
+                Number = 83, Name = "FARFETCH’D", Types = ["ELECTRIC", "FIRE"], BaseStatTotal = 318,
                 Hp = 65, Attack = 45, Defence = 65, SpecialAttack = 45, SpecialDefence = 49, Speed = 49,
                 Abilities = ["OVERGROW"], HeldItems = []
             },
             new()
             {
-                Number = 2, Name = "IVYSAUR", Types = ["FLYING"], BaseStatTotal = 405,
+                Number = 122, Name = "MR. MIME", Types = ["FLYING"], BaseStatTotal = 405,
                 Hp = 80, Attack = 62, Defence = 80, SpecialAttack = 60, SpecialDefence = 63, Speed = 60,
-                Abilities = ["EFFECT SPORE", "SYNCHRONIZE"], HeldItems = ["LEPPA BERRY(common)"]
+                Abilities = ["EFFECT SPORE", "SYNCHRONIZE"], HeldItems = ["KING’S ROCK(common)"]
             },
             new()
             {
-                Number = 3, Name = "VENUSAUR", Types = ["BUG", "WATER"], BaseStatTotal = 525,
+                Number = 250, Name = "HO-OH", Types = ["BUG", "WATER"], BaseStatTotal = 525,
                 Hp = 80, Attack = 82, Defence = 100, SpecialAttack = 83, SpecialDefence = 100, Speed = 80,
                 Abilities = ["ARENA TRAP", "STICKY HOLD"], HeldItems = ["ORAN BERRY(100%)", "LIGHT BALL(rare)"]
             }
@@ -143,7 +146,14 @@ public class UprLogParserTests
         var result = UprLogParser.ParseLog(log).PokemonStatistics;
 
         // Assert
-        Assert.Equivalent(expectedPokemon, result);
+        var resultNames = result.Select(p => p.Name).ToList();
+        Assert.All(UnconventionalNames, expected => Assert.Contains(expected, resultNames));
+
+        Assert.All(expectedFullInfo, expected =>
+        {
+            var actual = Assert.Single(result, actual => actual.Name == expected.Name);
+            Assert.Equivalent(expected, actual);
+        });
     }
 
     [Fact]
@@ -168,6 +178,11 @@ public class UprLogParserTests
             {
                 Number = 3, OldName = null, Name = "CURSE", Type = "???",
                 Power = 0, Accuracy = 0, Pp = 15
+            },
+            new()
+            {
+                Number = 176, OldName = null, Name = "CONVERSION 2", Type = "FIGHTING",
+                Power = 0, Accuracy = 100, Pp = 5
             }
         };
 
@@ -200,6 +215,11 @@ public class UprLogParserTests
             {
                 Number = 3, OldName = "CURSE", Name = "ATTACK AURA", Type = "???",
                 Power = 0, Accuracy = 0, Pp = 10
+            },
+            new()
+            {
+                Number = 176, OldName = "CONVERSION 2", Name = "GLASS GLARE", Type = "GROUND",
+                Power = 0, Accuracy = 90, Pp = 40
             }
         };
 
@@ -216,12 +236,12 @@ public class UprLogParserTests
         // Arrange
         var log = LogTestData.BuildTestLog(LogTestData.LogPokemonMovesetsSection);
 
-        var expectedMovesets = new List<LogMoveset>
+        var expectedFullInfo = new List<LogMoveset>
         {
             new()
             {
-                Number = 019, Name = "RATTATA", Evolution = "RATICATE",
-                Hp = 72, Attack = 35, Defence = 30, SpecialAttack = 35, SpecialDefence = 25, Speed = 56,
+                Number = 32, Pokemon = "NIDORAN♂", Evolution = "NIDORINO",
+                Hp = 46, Attack = 57, Defence = 40, SpecialAttack = 40, SpecialDefence = 40, Speed = 50,
                 LevelUpMoves =
                 [
                     new LogMovesetLevelUpMove
@@ -239,8 +259,8 @@ public class UprLogParserTests
                 [
                     new LogMovesetMove()
                     {
-                        Name = "SKULL BASH", Type = "NORMAL", Category = "PHYSICAL",
-                        Power = 100, Pp = 15, Accuracy = 100, Stab = true
+                        Name = "CONVERSION 2", Type = "NORMAL", Category = "STATUS",
+                        Power = 0, Pp = 15, Accuracy = 100, Stab = true
                     },
                     new LogMovesetMove()
                     {
@@ -251,8 +271,8 @@ public class UprLogParserTests
             },
             new()
             {
-                Number = 020, Name = "RATICATE", Evolution = "(no evolution)",
-                Hp = 60, Attack = 81, Defence = 97, SpecialAttack = 55, SpecialDefence = 70, Speed = 50,
+                Number = 122, Pokemon = "MR. MIME", Evolution = "(no evolution)",
+                Hp = 40, Attack = 45, Defence = 65, SpecialAttack = 100, SpecialDefence = 120, Speed = 90,
                 LevelUpMoves =
                 [
                     new LogMovesetLevelUpMove
@@ -269,7 +289,14 @@ public class UprLogParserTests
         var result = UprLogParser.ParseLog(log).PokemonMovesets;
 
         // Assert
-        Assert.Equivalent(expectedMovesets, result);
+        var resultNames = result.Select(p => p.Pokemon).ToList();
+        Assert.All(UnconventionalNames, expected => Assert.Contains(expected, resultNames));
+
+        Assert.All(expectedFullInfo, expected =>
+        {
+            var actual = Assert.Single(result, actual => actual.Pokemon == expected.Pokemon);
+            Assert.Equivalent(expected, actual);
+        });
     }
 
     [Fact]
@@ -280,10 +307,10 @@ public class UprLogParserTests
 
         var expectedTms = new List<LogTmHmMove>
         {
-            new() { Number = "TM01", Move = "HYPER BEAM" },
-            new() { Number = "TM02", Move = "BIDE" },
-            new() { Number = "TM03", Move = "THUNDER WAVE" },
-            new() { Number = "TM04", Move = "MUD-SLAP" },
+            new() { Name = "TM01", Number = 1, Move = "HYPER BEAM" },
+            new() { Name = "TM02", Number = 2, Move = "BIDE" },
+            new() { Name = "TM03", Number = 3, Move = "CONVERSION 2" },
+            new() { Name = "TM04", Number = 4, Move = "MUD-SLAP" },
         };
 
         // Act
@@ -301,10 +328,10 @@ public class UprLogParserTests
 
         var expectedTutorMoves = new List<LogTutorMove>
         {
-            new() { OldMove = "MEGA PUNCH", NewMove = "DESTINY BOND" },
+            new() { OldMove = "MEGA PUNCH", NewMove = "CONVERSION 2" },
             new() { OldMove = "SWORDS DANCE", NewMove = "SLUDGE" },
             new() { OldMove = "MUD-SLAP", NewMove = "ENDURE" },
-            new() { OldMove = "BODY SLAM", NewMove = "MUD-SLAP" },
+            new() { OldMove = "CONVERSION 2", NewMove = "MUD-SLAP" },
         };
 
         // Act
@@ -320,17 +347,17 @@ public class UprLogParserTests
         // Arrange
         var log = LogTestData.BuildTestLog(LogTestData.LogTmHmCompatibilitySection);
 
-        var expectedSpecies = new List<LogTmHmCompatabilityBySpecies>
+        var expectedFullInfoSpecies = new List<LogTmHmCompatabilityBySpecies>
         {
             new()
             {
                 Number = 029, Pokemon = "NIDORAN♀",
                 Moves =
                 [
-                    new LogTmHmMove { Number = "TM45", Move = "HAIL" },
-                    new LogTmHmMove { Number = "TM48", Move = "HYPNOSIS" },
-                    new LogTmHmMove { Number = "HM02", Move = "FLY" },
-                    new LogTmHmMove { Number = "HM07", Move = "WATERFALL" }
+                    new LogTmHmMove { Name = "TM45", Number = 45, Move = "HAIL" },
+                    new LogTmHmMove { Name = "TM48", Number = 48, Move = "CONVERSION 2" },
+                    new LogTmHmMove { Name = "HM02", Number = 2, Move = "FLY" },
+                    new LogTmHmMove { Name = "HM07", Number = 7, Move = "WATERFALL" }
                 ]
             },
             new()
@@ -338,34 +365,34 @@ public class UprLogParserTests
                 Number = 250, Pokemon = "HO-OH",
                 Moves =
                 [
-                    new LogTmHmMove { Number = "TM45", Move = "HAIL" },
-                    new LogTmHmMove { Number = "TM50", Move = "MUD-SLAP" },
-                    new LogTmHmMove { Number = "HM01", Move = "CUT" }
+                    new LogTmHmMove { Name = "TM45", Number = 45, Move = "HAIL" },
+                    new LogTmHmMove { Name = "TM50", Number = 50, Move = "MUD-SLAP" },
+                    new LogTmHmMove { Name = "HM01", Number = 1, Move = "CUT" }
                 ]
             }
         };
 
-        var expectedTmHms = new List<LogTmHmCompatabilityByTmHm>
+        var expectedFullInfoTmHms = new List<LogTmHmCompatabilityByTmHm>
         {
             new()
             {
-                Number = "TM01", Move = "HYPER BEAM",
+                Name = "TM01", Number = 1, Move = "MUD-SLAP",
                 Species =
                 [
-                    new LogPokemonSpecies { Number = 3, Name = "VENUSAUR" },
-                    new LogPokemonSpecies { Number = 4, Name = "CHARMANDER" },
-                    new LogPokemonSpecies { Number = 29, Name = "NIDORAN♂" },
+                    new LogPokemonSpecies { Number = 29, Name = "NIDORAN♀" },
+                    new LogPokemonSpecies { Number = 32, Name = "NIDORAN♂" },
+                    new LogPokemonSpecies { Number = 83, Name = "FARFETCH’D" },
                 ]
             },
             new()
             {
-                Number = "HM08", Move = "DIVE",
-                Species =
-                [
-                    new LogPokemonSpecies { Number = 7, Name = "SQUIRTLE" },
-                    new LogPokemonSpecies { Number = 8, Name = "WARTORTLE" },
-                    new LogPokemonSpecies { Number = 20, Name = "RATICATE" },
-                ]
+                Name = "TM02", Number = 2, Move = "CONVERSION 2",
+                Species = [new LogPokemonSpecies { Number = 122, Name = "MR. MIME" }]
+            },
+            new()
+            {
+                Name = "HM08", Number = 8, Move = "DIVE",
+                Species = [new LogPokemonSpecies { Number = 250, Name = "HO-OH" }]
             }
         };
 
@@ -373,9 +400,27 @@ public class UprLogParserTests
         var result = UprLogParser.ParseLog(log).TmHmCompatibility;
 
         // Assert
-        Assert.Equivalent(expectedSpecies, result.BySpecies);
-        Assert.Equivalent(expectedTmHms, result.ByTmHm);
+        var resultSpeciesPokemon = result.BySpecies.Select(s => s.Pokemon).ToList();
+        Assert.All(UnconventionalNames, expected => Assert.Contains(expected, resultSpeciesPokemon));
+
+        var resultTmPokemon = result.ByTmHm.SelectMany(tm => tm.Species).Select(s => s.Name).ToList();
+        Assert.All(UnconventionalNames, expected => Assert.Contains(expected, resultTmPokemon));
+
+        Assert.All(expectedFullInfoSpecies, expected =>
+        {
+            var actual = Assert.Single(result.BySpecies, actual =>
+                actual.Pokemon == expected.Pokemon);
+            Assert.Equivalent(expected, actual);
+        });
+
+        Assert.All(expectedFullInfoTmHms, expected =>
+        {
+            var actual = Assert.Single(result.ByTmHm, actual =>
+                actual.Name == expected.Name);
+            Assert.Equivalent(expected, actual);
+        });
     }
+
 
     [Fact]
     public void ParseLog_ParsesMoveTutorCompatibility()
@@ -383,12 +428,17 @@ public class UprLogParserTests
         // Arrange 
         var log = LogTestData.BuildTestLog(LogTestData.LogMoveTutorCompatibilitySection);
 
-        var expectedSpecies = new List<LogTutorCompatibilityBySpecies>
+        var expectedFullInfoSpecies = new List<LogTutorCompatibilityBySpecies>
         {
             new()
             {
-                Number = 029, Pokemon = "NIDORAN♂",
-                Moves = ["DESTINY BOND", "SLUDGE", "MUD-SLAP"],
+                Number = 029, Pokemon = "NIDORAN♀",
+                Moves = ["CONVERSION 2", "SLUDGE", "MUD-SLAP"],
+            },
+            new()
+            {
+                Number = 122, Pokemon = "MR. MIME",
+                Moves = ["BIDE"],
             },
             new()
             {
@@ -397,27 +447,31 @@ public class UprLogParserTests
             }
         };
 
-        var expectedTutorMoves = new List<LogTutorCompatibilityByTutorMove>
+        var expectedFullInfoTutorMoves = new List<LogTutorCompatibilityByTutorMove>
         {
             new()
             {
                 Move = "HYPER BEAM",
                 Species =
                 [
-                    new LogPokemonSpecies { Number = 3, Name = "VENUSAUR" },
-                    new LogPokemonSpecies { Number = 4, Name = "CHARMANDER" },
-                    new LogPokemonSpecies { Number = 29, Name = "NIDORAN♂" },
+                    new LogPokemonSpecies { Number = 29, Name = "NIDORAN♀" },
+                    new LogPokemonSpecies { Number = 32, Name = "NIDORAN♂" },
+                    new LogPokemonSpecies { Number = 83, Name = "FARFETCH’D" },
+                ]
+            },
+            new()
+            {
+                Move = "CONVERSION 2",
+                Species =
+                [
+                    new LogPokemonSpecies { Number = 122, Name = "MR. MIME" },
+                    new LogPokemonSpecies { Number = 233, Name = "PORYGON2" },
                 ]
             },
             new()
             {
                 Move = "MUD-SLAP",
-                Species =
-                [
-                    new LogPokemonSpecies { Number = 7, Name = "SQUIRTLE" },
-                    new LogPokemonSpecies { Number = 8, Name = "WARTORTLE" },
-                    new LogPokemonSpecies { Number = 20, Name = "RATICATE" },
-                ]
+                Species = [new LogPokemonSpecies { Number = 250, Name = "HO-OH" }]
             }
         };
 
@@ -425,8 +479,25 @@ public class UprLogParserTests
         var result = UprLogParser.ParseLog(log).TutorCompatibility;
 
         // Assert
-        Assert.Equivalent(expectedSpecies, result.BySpecies);
-        Assert.Equivalent(expectedTutorMoves, result.ByTutorMove);
+        var resultSpeciesPokemon = result.BySpecies.Select(s => s.Pokemon).ToList();
+        Assert.All(UnconventionalNames, expected => Assert.Contains(expected, resultSpeciesPokemon));
+
+        var resultTutorPokemon = result.ByTutorMove.SelectMany(tm => tm.Species).Select(s => s.Name).ToList();
+        Assert.All(UnconventionalNames, expected => Assert.Contains(expected, resultTutorPokemon));
+
+        Assert.All(expectedFullInfoSpecies, expected =>
+        {
+            var actual = Assert.Single(result.BySpecies, actual =>
+                actual.Pokemon == expected.Pokemon);
+            Assert.Equivalent(expected, actual);
+        });
+
+        Assert.All(expectedFullInfoTutorMoves, expected =>
+        {
+            var actual = Assert.Single(result.ByTutorMove, actual =>
+                actual.Move == expected.Move);
+            Assert.Equivalent(expected, actual);
+        });
     }
 
     [Fact]
@@ -442,7 +513,7 @@ public class UprLogParserTests
                 Number = 1, Name = "HIKER SAWYER", Id = "310058", BattleStyle = "Single",
                 Pokemon =
                 [
-                    new LogTrainerPokemon { Pokemon = "HARIYAMA", Level = 21, Item = null }
+                    new LogTrainerPokemon { Pokemon = "FARFETCH’D", Level = 21, Item = null }
                 ]
             },
             new()
@@ -450,22 +521,22 @@ public class UprLogParserTests
                 Number = 9, Name = "[PK][MN] BREEDER GABRIELLE", Id = "310198", BattleStyle = null,
                 Pokemon =
                 [
-                    new LogTrainerPokemon { Pokemon = "LEDIAN", Level = 46, Item = null },
+                    new LogTrainerPokemon { Pokemon = "NIDORAN♂", Level = 46, Item = null },
                     new LogTrainerPokemon { Pokemon = "NIDORAN♀", Level = 48, Item = null },
-                    new LogTrainerPokemon { Pokemon = "POLIWAG", Level = 46, Item = null },
-                    new LogTrainerPokemon { Pokemon = "LATIOS", Level = 48, Item = null },
-                    new LogTrainerPokemon { Pokemon = "UMBREON", Level = 49, Item = "SITRUS BERRY" }
+                    new LogTrainerPokemon { Pokemon = "MR. MIME", Level = 46, Item = null },
+                    new LogTrainerPokemon { Pokemon = "PORYGON2", Level = 48, Item = null },
+                    new LogTrainerPokemon { Pokemon = "HO-OH", Level = 49, Item = "KING’S ROCK" }
                 ]
             },
             new()
             {
-                Number = 34, Name = "AQUA LEADER ARCHIE", Id = "310580",  BattleStyle = "Double",
+                Number = 34, Name = "AQUA LEADER ARCHIE", Id = "310580", BattleStyle = "Double",
                 Pokemon =
                 [
                     new LogTrainerPokemon
                     {
                         Pokemon = "MIGHTYENA", Level = 41, Item = null, Ability = "INTIMIDATE",
-                        Moves = ["HYPER BEAM", "MUD-SLAP", "TORMENT", "DOUBLE TEAM"]
+                        Moves = ["HYPER BEAM", "MUD-SLAP", "CONVERSION 2", "DOUBLE TEAM"]
                     },
                     new LogTrainerPokemon
                     {

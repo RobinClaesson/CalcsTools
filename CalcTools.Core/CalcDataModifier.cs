@@ -99,7 +99,7 @@ public static class CalcDataModifier
     {
         foreach (var logLearnset in randomizerLog.PokemonMovesets)
         {
-            var key = logLearnset.Name.NormalizePokemonName();
+            var key = logLearnset.Pokemon.NormalizePokemonName();
 
             try
             {

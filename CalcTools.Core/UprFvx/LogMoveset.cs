@@ -3,7 +3,7 @@ namespace CalcTools.Core.UprFvx;
 public record LogMoveset
 {
     public int Number { get; init; }
-    public string Name { get; init; } = string.Empty;
+    public string Pokemon { get; init; } = string.Empty;
     public string Evolution { get; init; } = string.Empty;
     public int Hp { get; init; }
     public int Attack { get; init; }
