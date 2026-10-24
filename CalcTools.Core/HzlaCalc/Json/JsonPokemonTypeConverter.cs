@@ -16,13 +16,13 @@ public class JsonPokemonTypeConverter : JsonConverter<PokemonType>
 
         return logType switch
         {
-            "???" or "null" => PokemonType.Unkown,
+            "???" or "null" => PokemonType.Unknown,
             _ => Enum.Parse<PokemonType>(logType, ignoreCase: true)
         };
     }
 
     public override void Write(Utf8JsonWriter writer, PokemonType value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value == PokemonType.Unkown ? "???" : value.ToString());
+        writer.WriteStringValue(value == PokemonType.Unknown ? "???" : value.ToString());
     }
 }

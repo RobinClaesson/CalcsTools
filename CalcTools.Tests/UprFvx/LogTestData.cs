@@ -8,8 +8,8 @@ public static class LogTestData
 {
     public static readonly List<TheoryDataRow<string, PokemonType>> SpecialTypeStrings =
     [
-        new("???", PokemonType.Unkown),
-        new("null", PokemonType.Unkown)
+        new("???", PokemonType.Unknown),
+        new("null", PokemonType.Unknown)
     ];
 
     public static IEnumerable<TheoryDataRow<string, PokemonType>> PokemonTypes => Enum.GetValues<PokemonType>()

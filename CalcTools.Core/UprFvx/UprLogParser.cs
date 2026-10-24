@@ -51,7 +51,7 @@ public static partial class UprLogParser
 
     public static PokemonType ParsePokemonType(string logType) => logType switch
     {
-        "???" or "null" => PokemonType.Unkown,
+        "???" or "null" => PokemonType.Unknown,
         _ => Enum.Parse<PokemonType>(logType, ignoreCase: true)
     };
 

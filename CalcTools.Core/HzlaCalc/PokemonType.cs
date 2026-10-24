@@ -25,5 +25,5 @@ public enum PokemonType
     Dark,
     Fairy,
     Stellar,
-    Unkown
+    Unknown
 }
