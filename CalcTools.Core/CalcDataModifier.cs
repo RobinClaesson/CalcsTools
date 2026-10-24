@@ -17,6 +17,7 @@ public static class CalcDataModifier
         ApplyRandomizerPokemonChanges(calcData, randomizerLog);
         ApplyRandomizerMovesetChanges(calcData, randomizerLog);
         ApplyRandomizerMoveChanges(calcData, randomizerLog);
+        ApplyRandomizerTmChanges(calcData, randomizerLog);
     }
 
     public static void FixTrainerNames(CalcData calcData) => calcData.FormattedSets.Values.ToList()
@@ -65,7 +66,7 @@ public static class CalcDataModifier
         foreach (var logMove in randomizerLog.MoveData)
         {
             var logMoveName = logMove.OldName ?? logMove.Name;
-            var key = KnownMoveMissmatches.GetValueOrDefault(logMoveName, logMoveName);
+            var key = CheckMismatches(logMoveName);
 
             var calcMove = calcData.Moves[key];
             calcMove.BasePower = logMove.Power;
@@ -109,7 +110,7 @@ public static class CalcDataModifier
                         .Select(logMove => new CalcLevelUpMove
                         {
                             Level = logMove.Level,
-                            Move = KnownMoveMissmatches.GetValueOrDefault(logMove.Name, logMove.Name).ToTitleCase()
+                            Move = CheckMismatches(logMove.Name).ToTitleCase()
                         })
                 ];
             }
@@ -123,7 +124,56 @@ public static class CalcDataModifier
         }
     }
 
-    private static readonly Dictionary<string, string> KnownMoveMissmatches =
+    private static void ApplyRandomizerTmChanges(CalcData calcData, RandomizerLog randomizerLog)
+    {
+        if (randomizerLog.RandomizationOverview is { TmMoves: true, TmHmCompatibility: false })
+        {
+            ApplyRandomizerTmNameChanges(calcData, randomizerLog);
+            return;
+        }
+
+        foreach (var logSpecies in randomizerLog.TmHmCompatibility.BySpecies)
+        {
+            var key = logSpecies.Pokemon.NormalizePokemonName();
+
+            calcData.Pokemons[key].LearnsetInfo.TMs =
+            [
+                .. logSpecies.Moves.Select(tm => tm.Move)
+                    .Select(CheckMismatches)
+                    .Select(s => s.ToTitleCase())
+            ];
+        }
+    }
+
+    private static void ApplyRandomizerTmNameChanges(CalcData calcData, RandomizerLog randomizerLog)
+    {
+        var gameTms = GamesInfo.GetTmMoves(3);
+        var gameHms = GamesInfo.GetHmMoves(3)
+            .Select(hm => hm.Value)
+            .ToList();
+
+        var movesMap = randomizerLog.TmMoves
+            .ToDictionary(
+                tm => CheckMismatches(gameTms[tm.Number]),
+                tm => CheckMismatches(tm.Move).ToTitleCase(),
+                StringComparer.InvariantCultureIgnoreCase);
+
+        foreach (var calcPokemon in calcData.Pokemons.Values)
+        {
+            calcPokemon.LearnsetInfo.TMs =
+                [.. calcPokemon.LearnsetInfo.TMs.Select(CheckMismatches).Select(TranslateMove)];
+        }
+
+        return;
+
+        string TranslateMove(string move) => gameHms.Contains(move, StringComparer.InvariantCultureIgnoreCase)
+            ? move
+            : movesMap[CheckMismatches(move)];
+    }
+
+    private static string CheckMismatches(string move) => KnownMoveMismatches.GetValueOrDefault(move, move);
+
+    private static readonly Dictionary<string, string> KnownMoveMismatches =
         new(StringComparer.InvariantCultureIgnoreCase)
         {
             { "DOUBLESLAP", "Double Slap" }, { "THUNDERPUNCH", "Thunder Punch" }, { "FIREPUNCH", "Fire Punch" },
