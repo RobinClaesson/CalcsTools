@@ -1,6 +1,7 @@
-﻿using CalcTools.Core.UprFvx;
+﻿using CalcTools.Core.BaseData;
+using CalcTools.Core.UprFvx;
 using CalcTools.Core.UprFvx.Constants;
-using PokemonType = CalcTools.Core.HzlaCalc.PokemonType;
+
 
 namespace CalcTools.Tests.UprFvx;
 

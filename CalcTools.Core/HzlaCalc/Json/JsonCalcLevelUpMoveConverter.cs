@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace CalcTools.Core.HzlaCalc.Json;
 
-public class JsonLevelUpMoveConverter : JsonConverter<LevelUpMove>
+public class JsonCalcLevelUpMoveConverter : JsonConverter<CalcLevelUpMove>
 {
-    public override LevelUpMove Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override CalcLevelUpMove Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException("Expected an array.");
@@ -20,14 +20,14 @@ public class JsonLevelUpMoveConverter : JsonConverter<LevelUpMove>
         if (reader.TokenType != JsonTokenType.EndArray)
             throw new JsonException("Expected exactly two elements.");
 
-        return new LevelUpMove
+        return new CalcLevelUpMove
         {
             Level = level,
             Move = move
         };
     }
 
-    public override void Write(Utf8JsonWriter writer, LevelUpMove value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, CalcLevelUpMove value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
         writer.WriteNumberValue(value.Level);

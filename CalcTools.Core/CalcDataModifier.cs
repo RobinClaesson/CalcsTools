@@ -106,7 +106,7 @@ public static class CalcDataModifier
                 calcData.Pokemons[key].LearnsetInfo.Learnsets =
                 [
                     .. logLearnset.LevelUpMoves
-                        .Select(logMove => new LevelUpMove
+                        .Select(logMove => new CalcLevelUpMove
                         {
                             Level = logMove.Level,
                             Move = KnownMoveMissmatches.GetValueOrDefault(logMove.Name, logMove.Name).ToTitleCase()

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace CalcTools.Core.HzlaCalc;
 
-public record Stats
+public record CalcStats
 {
     [JsonPropertyName("hp")] public int Hp { get; set; }
     [JsonPropertyName("at")] public int Attack { get; set; }

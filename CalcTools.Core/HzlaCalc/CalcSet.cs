@@ -2,10 +2,10 @@ using System.Text.Json.Serialization;
 
 namespace CalcTools.Core.HzlaCalc;
 
-public record Set
+public record CalcSet
 {
-    [JsonPropertyName("evs")] public Stats Evs { get; set; } = new();
-    [JsonPropertyName("ivs")] public Stats Ivs { get; set; } = new();
+    [JsonPropertyName("evs")] public CalcStats Evs { get; set; } = new();
+    [JsonPropertyName("ivs")] public CalcStats Ivs { get; set; } = new();
     [JsonPropertyName("item")] public string Item { get; set; } = string.Empty;
     [JsonPropertyName("level")] public int Level { get; set; }
     [JsonPropertyName("moves")] public List<string> Moves { get; set; } = [];

@@ -3,8 +3,8 @@ using CalcTools.Core.HzlaCalc.Json;
 
 namespace CalcTools.Core.HzlaCalc;
 
-[JsonConverter(typeof(JsonLevelUpMoveConverter))]
-public record LevelUpMove
+[JsonConverter(typeof(JsonCalcLevelUpMoveConverter))]
+public record CalcLevelUpMove
 {
     public required int Level { get; set; }
     public required string Move { get; set; }

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CalcTools.Core.HzlaCalc.Json;
+namespace CalcTools.Core.BaseData.Json;
 
 public class JsonPokemonTypeConverter : JsonConverter<PokemonType>
 {

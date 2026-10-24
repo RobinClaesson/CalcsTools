@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
+using CalcTools.Core.BaseData.Json;
 using CalcTools.Core.HzlaCalc.Json;
 
-namespace CalcTools.Core.HzlaCalc;
+namespace CalcTools.Core.BaseData;
 
 [JsonConverter(typeof(JsonPokemonTypeConverter))]
 public enum PokemonType
