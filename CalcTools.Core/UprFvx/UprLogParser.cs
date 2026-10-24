@@ -270,6 +270,7 @@ public static partial class UprLogParser
         return new LogTrainer
         {
             Number = trainerInfo.Groups["number"].IntValue,
+            Class = trainerInfo.Groups["class"].Value,
             Name = trainerInfo.Groups["name"].Value,
             Id = trainerInfo.Groups["id"].Value,
             Pokemon = [.. pokemon.Select(BuildLogTrainerPokemon)],
@@ -463,7 +464,7 @@ public static partial class UprLogParser
     [GeneratedRegex(@"(?<move>\w[\w -]+\w)(?:\s*#(?<pokemon_number>\d+)\s*(?<pokemon>\w[^,\n]+),?)*")]
     private static partial Regex TutorCompatibilityByTutorMoveRegex();
 
-    [GeneratedRegex(@"(?<number>\d+)\s*\((?<name>[^\)]+)\)@(?<id>[A-Z0-9]+)(?:\s*-)?")]
+    [GeneratedRegex(@"(?<number>\d+)\s*\((?<class>[^\)]+)\s(?<name>[^\)]+)\)@(?<id>[A-Z0-9]+)(?:\s*-)?")]
     private static partial Regex TrainerInfoRegex();
 
     [GeneratedRegex(
